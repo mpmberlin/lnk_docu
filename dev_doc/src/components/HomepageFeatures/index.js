@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
+import { Link } from 'react-router-dom';
 
 const FeatureList = [
   {
@@ -11,6 +12,7 @@ const FeatureList = [
         Start here to get a better understanding of how to use our API.
       </>
     ),
+    link: '/docs/intro', // Internal link
 
   },
   {
@@ -18,24 +20,33 @@ const FeatureList = [
     Svg: require('@site/static/img/swagger-svgrepo-com.svg').default,
     description: (
       <>
-       Direct access to our Swagger collection.
+       Go to the Swagger API definition.
       </>
     ),
+    link: 'https://swagger.io/tools/swagger-ui/', // External link
+    isExternal: true, // Flag to indicate an external link
   },
   {
     title: 'Postman collection',
     Svg: require('@site/static/img/postman-icon-svgrepo-com.svg').default,
     description: (
       <>
-        Download our Postman collection to get started.
+        Download our Postman collection.
       </>
     ),
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({ Svg, title, description, link, isExternal }) {
+  // Choose the correct element based on whether the link is internal or external
+  const Wrapper = isExternal ? 'a' : Link;
+  // Set properties for the wrapper element
+  const wrapperProps = isExternal
+    ? { href: link, target: '_blank', rel: 'noopener noreferrer' }
+    : { to: link };
+
   return (
-    <div className={clsx('col col--4')}>
+    <Wrapper {...wrapperProps} className={clsx('col col--4', styles.featureItem)}>
       <div className="text--center">
         <Svg className={styles.featureSvg} role="img" />
       </div>
@@ -43,10 +54,9 @@ function Feature({Svg, title, description}) {
         <Heading as="h3">{title}</Heading>
         <p>{description}</p>
       </div>
-    </div>
+    </Wrapper>
   );
 }
-
 export default function HomepageFeatures() {
   return (
     <section className={styles.features}>

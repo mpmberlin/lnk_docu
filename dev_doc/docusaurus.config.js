@@ -9,7 +9,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Checklynx',
-  tagline: 'Developer´s Portal',
+  tagline: "Developers' portal",
   favicon: 'img/CL_pink.png',
 
   // Set the production url of your site here
@@ -66,7 +66,7 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'Developers home',
+        title: "Lynx-dev-home" ,
         logo: {
           alt: 'My Site Logo',
           src: 'img/CL_pink.png',
