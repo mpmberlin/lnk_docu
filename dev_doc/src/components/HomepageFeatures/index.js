@@ -51,8 +51,8 @@ function Feature({ Svg, title, description, link, isExternal }) {
         <Svg className={styles.featureSvg} role="img" />
       </div>
       <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
+      <Heading as="h3" className={styles.featureTitle}>{title}</Heading>
+      <p className={styles.featureDescription}>{description}</p>
       </div>
     </Wrapper>
   );

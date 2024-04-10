@@ -6,6 +6,24 @@
 }
 
 .featureSvg {
-  height: 200px;
+  height: 100px;
   width: 200px;
+}
+
+
+.featureLink, .featureLink:hover, .featureLink:focus {
+  color: inherit; /* This will make the text use the inherited color, not the link color */
+  text-decoration: none; /* Optional: Removes underline from links */
+}
+
+.featureTitle, .featureDescription {
+  color: var(--text-color); 
+
+}
+
+/* Add any additional styles for hover states if needed */
+.featureLink:hover .featureTitle,
+.featureLink:hover .featureDescription {
+  color: var(--text-color); 
+
 }

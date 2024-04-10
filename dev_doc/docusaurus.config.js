@@ -43,16 +43,9 @@ const config = {
           sidebarPath: './sidebars.js',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          
         },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
+        
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -64,9 +57,9 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'img/CL_pink100.jpg',
       navbar: {
-        title: "Lynx-dev-home" ,
+        title: "Check-docs-home" ,
         logo: {
           alt: 'My Site Logo',
           src: 'img/CL_pink.png',
@@ -94,7 +87,7 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
+                label: 'API documentation',
                 to: '/docs/intro',
               },
             ],
@@ -104,39 +97,42 @@ const config = {
             items: [
               {
                 label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+                href: 'https://stackoverflow.com/questions/tagged/checklynx',
               },
               {
                 label: 'Discord',
-                href: 'https://discordapp.com/invite/docusaurus',
-              },
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/docusaurus',
-              },
+                href: 'https://discordapp.com/invite/checklynx',
+              }
+              
             ],
           },
           {
             title: 'More',
             items: [
+              
               {
-                label: 'Blog',
-                to: '/blog',
+                label: 'Checklyns App',
+                href: 'https://github.com/facebook/docusaurus',
               },
               {
-                label: 'GitHub',
+                label: 'Landing website',
                 href: 'https://github.com/facebook/docusaurus',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Checklynx`,
       },
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
       },
     }),
+    customFields: {
+      auth_url: 'https://example.com/api',
+      anotherVariable: 'Another Value',
+    },
+
 };
 
 export default config;
