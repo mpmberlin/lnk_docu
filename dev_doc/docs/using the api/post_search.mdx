@@ -1,0 +1,244 @@
+---
+sidebar_position: 3
+description: Discover how to post a search uging the API
+sidebar_label: Search
+title: Search
+---
+
+# Search
+
+`POST`  /search
+
+Create a search to retrieve if a target is in a Sanctions list or is a Politically Exposed Person.
+The target can be an individual or a company.
+This is an anonimus search and the terms of the search as well as the results will not be persisted in our data base.
+
+
+## Request Parameters
+
+The request body for the search endpoint consists of two main components: the search_term and optional filters.
+
+### Search Term
+**`search_term`** is a mandatory string parameter used to query against specific datasets such as sanctions lists and Politically Exposed Persons (PEP). It searches through target names and their aliases or other associated names.
+
+**Requirements:**
+
+The `search term` is mandatory.
+
+The `search_term` must be a string.
+It should contain a minimum of three characters to ensure a valid search.
+:::tip
+
+To know more about _fuzzy_ search check the [concepts site](./concepts.mdx)
+
+:::
+
+### Filter parameters
+Filters allow for refining search queries by targeting specific criteria. Below are the available filters:
+
+**`group_type`**  (Type: ``List<String>, optional``)
+
+Determines the nature of the target, such as "individual" for private persons or "entity" for organizations and companies. Specifying "individual" will filter out all targets identified as entities and vice versa. Targets with an unknown group type will not be filtered out.
+Example: `["individual"]`, `["entity"]`, or `[]`
+
+**`nationality `** (Type: ``List<String>, optional``)
+
+Must conform to ISO 3166-1 alpha-2 codes. This filter excludes nationalities for individuals or jurisdictions for entities that do not match the specified codes. Targets with unknown nationality or jurisdiction will not be filtered out.
+Example: `["US", "UK"]`
+
+**`source_type`** (Type: ``List<String>, optional``)
+
+Specifies which databases to search through, options include "pep" for Politically Exposed Persons, "sanctions" for sanctions lists, or both. Leaving the array empty defaults to searching all databases.
+Example: `["pep"]`, `["sanctions"]`, or `[]`
+
+**`gender`** (Type: ``List<String>, optional``)
+
+Filters targets based on gender. Specifying "male" will exclude all targets where the gender is female and vice versa. Targets with an unknown gender will not be filtered out.
+Example: `["male"]`, `["female"]`, or `[]`
+
+**`birth_year`** (Type: ``List<String>, optional``)
+
+Accepts a year in the format "YYYY". This filter excludes targets whose birth year does not match the specified year(s). Targets with an unknown birth year will not be filtered out.
+Example: `["1984"]`, `["1984", "1985"]`, or `[]`
+
+
+
+
+
+### Logical dependencies on filter parameters
+Certain combinations of filters based on the nature of the data sources may result in no results being returned. Understanding these dependencies will help in constructing effective queries:
+
+**Combining `group_type` and `source_type` Filters:**
+Setting **`group_type`** to `["entity"]` and **`source_type`** to `["pep"]` will yield no results. This occurs because the dataset for Politically Exposed Persons (PEP) does not include information about companies or entities.
+
+**Effectiveness of Filters with `group_type` Set to `["entity"]`:**
+When **`group_type`** is set to `["entity"]`, the only effective filter is `nationality`, which applies to jurisdictions for entities. Other filters like `gender` and `birth_year` will have no impact on the query results because they are not applicable to entities.
+
+:::caution
+
+Setting **`group_type`** to `["entity"]` and **`source_type`** to `["pep"]` will yield no results.
+
+:::
+## Search examples
+
+### Individual in sanctions list sources
+
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs groupId="language">
+
+  <TabItem value="py" label="python">
+```py
+import requests
+
+api_key_value = 'your-API-Key'
+base_url='base_url'
+
+body = {
+    "search_term": "Al-Tikriti",
+    "filters": {
+        "source_type": ["sanctions"],
+        "nationality": ["IQ", "SY"],
+        "group_type": ["individual"],
+        "gender": ["male"],
+        "birth_year": ["1951"]
+    }
+}
+url = f"{base_url}/search"
+headers = {
+    "x-api-key": api_key_value,
+    "Content-Type": "application/json"
+}
+response = requests.post(url, headers=headers, json=body)
+if response.status_code == 200:
+    print("Request successful:", response.json())
+else:
+    print("Failed to make request, status code:", response.status_code)
+```
+
+</TabItem>
+
+  <TabItem value="js" label="javascript">
+```js
+const fetch = require('node-fetch');
+const apiKeyValue = 'your-API-Key';
+const baseUrl = 'base_url';
+
+const body = {
+    "search_term": "Al-Tikriti",
+    "filters": {
+        "source_type": ["sanctions"],
+        "nationality": ["IQ", "SY"],
+        "group_type": ["individual"],
+        "gender": ["male"],
+        "birth_year": ["1951"]
+    }
+};
+
+const url = `${baseUrl}/search`;
+const headers = {
+    "x-api-key": apiKeyValue,
+    "Content-Type": "application/json"
+};
+fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body)
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Failed to fetch: ' + response.status);
+    }
+})
+.then(data => {
+    console.log("Request successful:", data);
+})
+.catch(error => {
+    console.log("Error in making request:", error.message);
+});
+
+
+```
+
+  </TabItem>
+</Tabs>
+
+
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+[
+    {
+        "target_id": "BISPL-c948e3c1d",
+        "score": 2.3,
+        "target": {
+            "group_type": "individual",
+            "name": "Al-Tikriti, Barzan Ibrahim Hassan",
+            "nationality": ["IQ"],
+            "birth_year": ["1951"],
+            "birth_date": ["1951-02-17"],
+            "address": [{"address": "Geneva, CH"}],
+            "associates": [{"type": "first degree family", "value": "Saddam Hussein al-Tikriti", "details": "brother of"}],
+            "birth_place": [{"place": "Tikrit, Iraq", "country": "IQ"}],
+            "other_names": ["Al-Takriti, Barzan Ibrahim Hassan", "Al-Tikriti, Barzan Ibrahim Hasan"]
+        },
+        "source": {
+            "listing_id": "7880",
+            "region": "USA",
+            "name": "Bureau of Industry and Security",
+            "id": "BISPL",
+            "source_type": "sanctions"
+        },
+        "case": [{
+            "basis": "Specially Designated Nationals (SDN) - Treasury Department",
+            "program": "IRAQ2",
+            "url": "https://home.treasury.gov/policy-issues/financial-sanctions/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists"
+        }]
+    },
+    {
+        "target_id": "MEFSIN-10f126371",
+        "score": 2.3,
+        "target": {
+            "group_type": "individual",
+            "name": "Hussein Al-Tikriti",
+            "birth_place": [{"place": "Bagdad"}],
+            "remarks": ["Fils cadet de Saddam Hussein. Supervisait la Garde républicaine spéciale, l'Organisation spéciale de sécurité et la Garde républicaine"],
+            "first_name": "Saddam Qusay",
+            "other_names": ["Qoussaï Saddam Hussein Al-Tikriti"]
+        },
+        "source": {
+            "listing_id": "2338",
+            "region": "France",
+            "name": "Ministère de L'Économie, des Finances et de la Souveraineté.",
+            "id": "MEFSIN",
+            "source_type": "sanctions"
+        },
+        "case": [{
+            "other_ids": ["EU.39.56"],
+            "basis": "(CE) 1210/2003 du 07/07/2003 (ONU Irak - RCSNU 1518 (2003) et R (CE) 1210/2003)"
+        }]
+    },
+    {
+        "target_id": "MEFSIN-202fb3711",
+        "score": 2.2,
+        "target": {
+            "group_type": "individual",
+            "name": "Hussein al-tikriti",
+            // Additional target data here...
+        }
+    }
+]
+
+```
+  </div>
+</details>
+
+            
+
+

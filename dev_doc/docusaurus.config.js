@@ -46,6 +46,7 @@ const config = {
           
         },
         
+        
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -59,18 +60,19 @@ const config = {
       // Replace with your project's social card
       image: 'img/CL_pink100.jpg',
       navbar: {
-        title: "Check-docs-home" ,
+        title: "Checkdocs" ,
         logo: {
           alt: 'My Site Logo',
           src: 'img/CL_pink.png',
         },
-        items: [
-          {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
-            position: 'left',
-            label: 'API documentation',
-          },
+      
+      //  items: [
+      //    {
+      //      type: 'docSidebar',
+      //      sidebarId: 'tutorialSidebar',
+      //      position: 'left',
+      //      label: 'API documentation',
+      //    },
          // {to: '/blog', label: 'App', position: 'left'},
         
         //  {
@@ -78,7 +80,8 @@ const config = {
           //  label: 'GitHub',
            // position: 'right',
          //},
-        ],
+       // ],
+      
       },
       footer: {
         style: 'dark',

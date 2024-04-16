@@ -1,0 +1,120 @@
+---
+sidebar_position: 1
+description: Access the API securely
+sidebar_label: Authentication
+title: Authentication
+tags:
+  - Key
+  - Credentials
+  - Security
+---
+
+# Authentication
+
+Our API leverages **API key**, authorization. It ensures that your interactions with our API are both secure and efficient, aligning with industry practices for safeguarded access.
+
+
+
+## Obtaining the API Key
+Here’s how to get started:
+
+- Log In to the App UI Console.
+- Navigate to the API security tab.
+- Click "Add API key", enter a friendly name for it and click on "Create Key".
+- You will be provided with an API Key Value. This Key value is unique to your company and will used to authenticate API requests.
+- It's extremely important to **store the Key Value securely** to prevent unauthorized access and potential security breaches
+:::danger Store your API Keys securely
+Always store your API keys in a secure location and never expose them in your front-end code or share them publicly. Consider using environment variables or secure vaults to manage access to your API keys.
+:::
+## Make authorized request
+After securing your Client ID and Client Secret, the next step in utilizing our API is to exchange these credentials for an access token. The access token grants your application permission to make API requests.
+
+#### 1. Parameters
+To initiate the token exchange process, you need to send a request to our authorization server. This is done by making a POST request to the token endpoint. Ensure your request includes the following parameters:
+
+
+
+**api-key-value:** Your application's `api-key-value` from previous step.
+
+**base_url**: `https://checklynx.com`
+
+
+#### 2. Send the request
+Send the request to the token endpoint. Here is a code example.
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs groupId="language">
+  <TabItem value="python" label="python">
+  ```jsx 
+import requests
+
+api_key_value = 'your-API-Key'
+base_url='base_url'
+
+url = f"{base_url}/search"
+body={
+    "search_term": "John Wick",
+    "filters": {}
+    }
+
+headers = {
+    'x-api-key': api_key_value,
+    'Content-Type': 'application/json'
+}
+
+response = requests.post(url, headers=headers, json=body)
+
+if response.status_code == 200:
+    print("Request successful:", response.json())
+else:
+    print("Failed to make request, status code:", response.status_code)
+    ``` 
+    </TabItem>
+  <TabItem value="javascript" label="javascript">
+  ```jsx 
+const apiKeyValue = 'your-API-Key';
+const baseUrl = 'baseUrl';
+const url = `${baseUrl}/search`; // Replace baseUrl with your actual base URL
+const body = {
+  search_term: "John Wick",
+  filters: {}
+};
+
+const headers = {
+  'x-api-key': apiKeyValue,
+  'Content-Type': 'application/json'
+};
+
+fetch(url, {
+  method: 'POST',
+  headers: headers,
+  body: JSON.stringify(body)
+})
+.then(response => {
+  if (response.ok) {
+    return response.json();
+  } else {
+    console.log("Failed to make request, status code:", response.status);
+    return Promise.reject(response.status);
+  }
+})
+.then(data => {
+  console.log("Request successful:", data);
+})
+.catch(error => {
+  console.log("Error in making request:", error);
+});
+
+
+
+    ``` 
+  </TabItem>
+</Tabs>
+
+
+
+
+
+
