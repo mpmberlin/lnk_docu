@@ -260,6 +260,8 @@ fetch(url, {
 
 
 ### Entity in sanctions list sources
+
+
 <Tabs groupId="individual">
 
   <TabItem value="json" label="json">
@@ -399,6 +401,244 @@ fetch(url, {
     }
     // Additional target data here...
 ]
+```
+  </div>
+</details>
+
+
+
+### Individual in Politically Exposed Peeople
+
+
+<Tabs groupId="pep">
+
+  <TabItem value="json" label="json">
+```js
+body={
+      "search_term": "barack Obama",
+      "filters": {
+        "source_type": ["pep"],
+        "nationality": ["US"],
+        "group_type": ["individual"],
+        "gender": ["male"],
+        "birth_year": ["1961"]
+      } 
+}
+```
+  </TabItem>
+
+  <TabItem value="py" label="python">
+```js
+import requests
+
+api_key_value = 'your-API-Key'
+base_url='base_url'
+
+body={
+      "search_term": "barack Obama",
+      "filters": {
+        "source_type": ["pep"],
+        "nationality": ["US"],
+        "group_type": ["individual"],
+        "gender": ["male"],
+        "birth_year": ["1961"]
+      } 
+}
+url = f"{base_url}/search"
+headers = {
+    "x-api-key": api_key_value,
+    "Content-Type": "application/json"
+}
+response = requests.post(url, headers=headers, json=body)
+if response.status_code == 200:
+    print("Request successful:", response.json())
+else:
+    print("Failed to make request, status code:", response.status_code)
+```
+</TabItem>
+  <TabItem value="js" label="javascript">
+```js
+const fetch = require('node-fetch');
+const apiKeyValue = 'your-API-Key';
+const baseUrl = 'base_url';
+
+const body={
+      "search_term": "barack Obama",
+      "filters": {
+        "source_type": ["pep"],
+        "nationality": ["US"],
+        "group_type": ["individual"],
+        "gender": ["male"],
+        "birth_year": ["1961"]
+      } 
+};
+
+const url = `${baseUrl}/search`;
+const headers = {
+    "x-api-key": apiKeyValue,
+    "Content-Type": "application/json"
+};
+fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body)
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Failed to fetch: ' + response.status);
+    }
+})
+.then(data => {
+    console.log("Request successful:", data);
+})
+.catch(error => {
+    console.log("Error in making request:", error.message);
+});
+
+
+```
+</TabItem>
+</Tabs>
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+[
+    {
+        "target_id": "pep-46b45ebe2",
+        "score": 5.0,
+        "target": {
+            "name": "Barack Obama",
+            "nationality": [
+                "US",
+                "KE"
+            ],
+            "birth_year": [
+                "1961"
+            ],
+            "gender": "male",
+            "birth_date": [
+                "1961-08-04"
+            ],
+            "associates": [
+                {
+                    "type": "first degree family",
+                    "value": "Barack Obama Sr.",
+                    "details": "father of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Stanley Ann Dunham",
+                    "details": "mother of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Malia Obama",
+                    "details": "child of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Sasha Obama",
+                    "details": "child of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Michelle Obama",
+                    "details": "spouse of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Auma Obama",
+                    "details": "sibling of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Maya Soetoro-Ng",
+                    "details": "sibling of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Malik Obama",
+                    "details": "sibling of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Mark Okoth Obama Ndesandjo",
+                    "details": "sibling of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "David Ndesandjo",
+                    "details": "sibling of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Abo Obama",
+                    "details": "sibling of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Bernard Obama",
+                    "details": "sibling of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "George Hussein Onyango Obama",
+                    "details": "sibling of"
+                },
+                {
+                    "type": "first degree family",
+                    "value": "Lolo Soetoro",
+                    "details": "stepparent of"
+                },
+                {
+                    "type": "relatives",
+                    "value": "Madelyn Dunham",
+                    "details": "relative of"
+                },
+                {
+                    "type": "relatives",
+                    "value": "Stanley Armour Dunham",
+                    "details": "relative of"
+                },
+                {
+                    "type": "relatives",
+                    "value": "Lolo Soetoro",
+                    "details": "relative of"
+                }
+            ],
+            "birth_place": [
+                {
+                    "place": "Kapiolani Medical Center for Women and Children",
+                    "country": "US"
+                }
+            ],
+            "function": [
+                "2009-01-20 to 2017-01-20. President of the united states",
+                "2008-11-04 to 2009-01-20. President-elect of the united states",
+                "2007-01-03 to 2008-11-16. United states senator",
+                "2005-01-03 to 2007-01-03. United states senator",
+                "1997-01-08 to 2004-11-04. Member of the state senate of illinois"
+            ],
+            "title": [
+                "President of the united states from 2009 to 2017"
+            ],
+            "occupation": [
+                "['lawyer', 'politician', 'jurist', 'statesperson', 'academic', 'memoirist', 'podcaster', 'political writer', 'community organizer', 'international forum participant']"
+            ],
+            "group_type": "individual"
+        },
+        "source": {
+            "name": "Politically Exposed People",
+            "region": "Worlwide",
+            "source_id": "pep",
+            "source_type": "pep"
+        }
+    },
+  ]
 ```
   </div>
 </details>
