@@ -11,21 +11,20 @@ title: Search
 
 Create a search to retrieve if a target is in a Sanctions list or is a Politically Exposed Person.
 The target can be an individual or a company.
-This is an anonimus search and the terms of the search as well as the results will not be persisted in our data base.
+This is an anonymous search and the terms of the search as well as the results will not be persisted in our data base.
 
 
 ## Request Parameters
 
-The request body for the search endpoint consists of two main components: the search_term and optional filters.
+The request body for the search endpoint consists of two main components: the `search_term` and optional `filters`.
 
 ### Search Term
-**`search_term`** is a mandatory string parameter used to query against specific datasets such as sanctions lists and Politically Exposed Persons (PEP). It searches through target names and their aliases or other associated names.
+**`search_term`** (Type: ``List<String>, mandatory``) 
+
+Used to query against specific datasets such as sanctions lists and Politically Exposed Persons (PEP). It searches through target names and their aliases or other associated names.
 
 **Requirements:**
 
-The `search term` is mandatory.
-
-The `search_term` must be a string.
 It should contain a minimum of three characters to ensure a valid search.
 :::tip
 
@@ -83,11 +82,26 @@ Setting **`group_type`** to `["entity"]` and **`source_type`** to `["pep"]` will
 
 ### Individual in sanctions list sources
 
-
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-<Tabs groupId="language">
+<Tabs groupId="individual">
+
+  <TabItem value="json" label="json">
+```js
+{
+    "search_term": "Al-Tikriti",
+    "filters": {
+        "source_type": ["sanctions"],
+        "nationality": ["IQ", "SY"],
+        "group_type": ["individual"],
+        "gender": ["male"],
+        "birth_year": ["1951"]
+    }
+}
+
+```
+  </TabItem>
 
   <TabItem value="py" label="python">
 ```py
@@ -97,13 +111,13 @@ api_key_value = 'your-API-Key'
 base_url='base_url'
 
 body = {
-    "search_term": "Al-Tikriti",
+    "search_term": "Al-Tikriti",  # List of search terms, must be 3+ characters each
     "filters": {
-        "source_type": ["sanctions"],
-        "nationality": ["IQ", "SY"],
-        "group_type": ["individual"],
-        "gender": ["male"],
-        "birth_year": ["1951"]
+        "source_type": ["sanctions"],  # Optional, can be "sanctions" or "pep"
+        "nationality": ["IQ", "SY"],  # Optional ISO 3166-1 alpha-2 country codes
+        "group_type": ["individual"],  # Optional, can be "individual", "entity" 
+        "gender": ["male"],  # Optional, can also be "male or "female"
+        "birth_year": ["1951"]  # Optional, format "YYYY"
     }
 }
 url = f"{base_url}/search"
@@ -184,8 +198,12 @@ fetch(url, {
             "birth_year": ["1951"],
             "birth_date": ["1951-02-17"],
             "address": [{"address": "Geneva, CH"}],
-            "associates": [{"type": "first degree family", "value": "Saddam Hussein al-Tikriti", "details": "brother of"}],
-            "birth_place": [{"place": "Tikrit, Iraq", "country": "IQ"}],
+            "associates": [{
+                "type": "first degree family", 
+                "value": "Saddam Hussein al-Tikriti", 
+                "details": "brother of"}],
+            "birth_place": [{
+                "place": "Tikrit, Iraq", "country": "IQ"}],
             "other_names": ["Al-Takriti, Barzan Ibrahim Hassan", "Al-Tikriti, Barzan Ibrahim Hasan"]
         },
         "source": {
@@ -234,7 +252,6 @@ fetch(url, {
         }
     }
 ]
-
 ```
   </div>
 </details>
@@ -242,3 +259,146 @@ fetch(url, {
             
 
 
+### Entity in sanctions list sources
+<Tabs groupId="individual">
+
+  <TabItem value="json" label="json">
+```js
+{
+    "search_term": "Al-Tikriti",
+    "filters": {
+        "source_type": ["sanctions"],
+        "nationality": ["SG"],
+        "group_type": ["entity"]
+    }
+}
+```
+  </TabItem>
+
+  <TabItem value="py" label="python">
+```js
+import requests
+
+api_key_value = 'your-API-Key'
+base_url='base_url'
+
+body = {
+    "search_term": "Trading & Construction",  # List of search terms, must be 3+ characters each
+    "filters": {
+        "nationality": ["SG"],  
+        "group_type": ["entity"],  
+    }
+}
+url = f"{base_url}/search"
+headers = {
+    "x-api-key": api_key_value,
+    "Content-Type": "application/json"
+}
+response = requests.post(url, headers=headers, json=body)
+if response.status_code == 200:
+    print("Request successful:", response.json())
+else:
+    print("Failed to make request, status code:", response.status_code)
+```
+</TabItem>
+  <TabItem value="js" label="javascript">
+```js
+const fetch = require('node-fetch');
+const apiKeyValue = 'your-API-Key';
+const baseUrl = 'base_url';
+
+const body = {
+    "search_term": "Trading & Construction",  # List of search terms, must be 3+ characters each
+    "filters": {
+        "nationality": ["SG"],  
+        "group_type": ["entity"],  
+    }
+};
+
+const url = `${baseUrl}/search`;
+const headers = {
+    "x-api-key": apiKeyValue,
+    "Content-Type": "application/json"
+};
+fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body)
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Failed to fetch: ' + response.status);
+    }
+})
+.then(data => {
+    console.log("Request successful:", data);
+})
+.catch(error => {
+    console.log("Error in making request:", error.message);
+});
+
+
+```
+</TabItem>
+</Tabs>
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+[
+    {
+        "target_id": "OFAC1-1a544950a",
+        "score": 3.0,
+        "target": {
+            "group_type": "entity",
+            "name": "Asia trading & construction pte ltd",
+            "nationality": ["SG"],
+            "identification": [{
+                  "id": "201401923D",
+                  "type": "registration number",
+                  "details": "Registration Number"
+                }
+            ],
+            "address": [{
+                  "address": "20 Peck Seah Street #02-00",
+                  "city": "Singapore",
+                  "country": "SG",
+                  "zip_code": "79312"
+                }
+            ],
+            "remarks": ["(Linked To: STATE CORPORATION ROSTEC)"],
+            "second_name": "Asia trading & construction pte ltd",
+            "other_names": [
+                "ASIA TRADING AND CONSTRUCTION PTE LTD",
+                "FIVE STAR RESORT PTE LTD"
+            ]
+        },
+        "source": {
+            "listing_id": "40497",
+            "region": "USA",
+            "name": "Office of foreign assets control. specially designated nationals list",
+            "source_type": "sanctions"
+        },
+        "case": [{ "program": "Russia-eo14024" } ]
+    },
+    {
+        "target_id": "BISPL-b57b1d9aa",
+        "score": 3.0,
+        "target": {
+            "group_type": "entity",
+            "name": "Asia trading & construction pte ltd",
+            "identification": [{
+                  "id": "201401923D,",
+                  "type": "registration number",
+                  "details": "registration number"
+                }]
+          }
+    }
+    // Additional target data here...
+]
+```
+  </div>
+</details>
