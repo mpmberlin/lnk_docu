@@ -2,38 +2,42 @@ import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 import { Link } from 'react-router-dom';
+import con from '/config.json';
 
+const swagger=con.urls.checklynx_app
 const FeatureList = [
   {
-    title: 'API documentation',
-    Svg: require('@site/static/img/undraw_code_thinking_re_gka2.svg').default,
+    title: 'API Documentation',
+    Svg: require('@site/static/img/code_thinking.svg').default,
     description: (
       <>
-        Start here to get a better understanding of how to use our API.
+        Learn how to use the API
       </>
     ),
     link: '/docs/intro', // Internal link
 
   },
   {
-    title: 'Swagger collection',
+    title: 'Swagger',
     Svg: require('@site/static/img/swagger-svgrepo-com.svg').default,
     description: (
       <>
-       Go to the Swagger API definition.
+       Visit Swagger API definition.
       </>
     ),
-    link: 'https://swagger.io/tools/swagger-ui/', // External link
+    link: con.urls.swagger_url, // External link
     isExternal: true, // Flag to indicate an external link
   },
   {
-    title: 'Postman collection',
+    title: 'Postman',
     Svg: require('@site/static/img/postman-icon-svgrepo-com.svg').default,
     description: (
       <>
-        Download our Postman collection.
+        Visit Postman API collection.
       </>
     ),
+    link: con.urls.postman_url, // External link
+    isExternal: true, // Flag to indicate an external link
   },
 ];
 

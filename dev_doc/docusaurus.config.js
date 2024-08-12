@@ -5,15 +5,16 @@
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
 import {themes as prismThemes} from 'prism-react-renderer';
+import con from './config.json';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Checklynx',
-  tagline: "Developers' portal",
-  favicon: 'img/CL_pink.png',
+  tagline: "Developers' Portal",
+  favicon: 'img/CL_pink.svg',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://www.checklynx.com',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -63,7 +64,7 @@ const config = {
         title: "Checkdocs" ,
         logo: {
           alt: 'My Site Logo',
-          src: 'img/CL_pink.png',
+          src: 'img/CL_pink.svg',
         },
       
       //  items: [
@@ -87,39 +88,27 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Docs',
+            title: 'Company',
             items: [
               {
-                label: 'API documentation',
-                to: '/docs/intro',
-              },
-            ],
-          },
-          {
-            title: 'Community',
-            items: [
-              {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/checklynx',
+                label: 'Checklynx',
+                href: con.urls.landing_url,
               },
               {
-                label: 'Discord',
-                href: 'https://discordapp.com/invite/checklynx',
-              }
-              
+                label: 'Checklynx Portal ',
+                href: con.urls.checklynx_app,
+              },
+             
             ],
           },
+          
           {
-            title: 'More',
+            title: 'Support',
             items: [
               
               {
-                label: 'Checklyns App',
-                href: 'https://github.com/facebook/docusaurus',
-              },
-              {
-                label: 'Landing website',
-                href: 'https://github.com/facebook/docusaurus',
+                label: 'support@checklynx.com',
+                href: `mailto:${con.email.support}?subject=Dev-Support`, // Use backticks for template literals
               },
             ],
           },
@@ -128,13 +117,10 @@ const config = {
       },
       prism: {
         theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+        darkTheme: prismThemes.palenight,
       },
     }),
-    customFields: {
-      auth_url: 'https://example.com/api',
-      anotherVariable: 'Another Value',
-    },
+    
 
 };
 

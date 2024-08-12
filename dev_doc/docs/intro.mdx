@@ -2,46 +2,61 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Get started
 
-Let's discover **Docusaurus in less than 5 minutes**.
 
-## Getting Started
+## Introduction
+Welcome to our Developer Documentation! This API facilitates the seamless integration of your systems and automates searches within our database. We provide a REST-based API architecture, and authentication is managed using an API key.
 
-Get started by **creating a new site**.
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
 
-### What you'll need
+## Responses & errors
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+For successful requests:
 
-## Generate a new site
+The API returns a 200 HTTP status code, indicating that the request was processed successfully.
+The response body is in JSON format and contains detailed information about the request. 
 
-Generate a new Docusaurus site using the **classic template**.
+Unsuccessful requests will have a non-200 HTTP status code and will contain "code" and optionally a "message" with a detailed description of the error.
+Example of a code could be '400-BAD-REQUEST'.
 
-The classic template will automatically be added to your project after you run the command:
+## Fuzzy Logic and Scoring
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+Our system implements fuzzy logic in the search functionality for Politically Exposed Persons (PEPs) and sanctions lists. This approach is adopted to enhance the precision and effectiveness of the search results, ensuring that even inputs with minor errors or variations from the exact entries in the database can yield the correct matches.
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+#### Why Use Fuzzy Logic?
+Fuzzy logic is crucial in this context for several reasons:
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+- **Handling Variations and Typos**: Names can often be misspelled, or have variations in spelling across different documents or languages. Fuzzy logic allows the system to recognize and match these variations, ensuring that searches are resilient to common input errors.
 
-## Start your site
+- **Improving Match Accuracy**: Traditional exact match searches might miss relevant entries due to slight discrepancies in the input data. Fuzzy logic increases the likelihood of finding a match by considering a range of possible variations and similarities, rather than relying on a perfect match.
 
-Run the development server:
+- **Enhancing User Experience**: By employing fuzzy logic, the system provides a more forgiving and intelligent search capability. This leads to better user satisfaction as it minimizes the chances of missing important matches due to trivial mistakes or differences in the search query.
 
-```bash
-cd my-website
-npm run start
-```
+#### Scoring Methodology
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+Once a potential match is found using fuzzy logic, it is scored on a scale from 1 to 5. 
+This score reflects how closely the found entry matches the search query, with 1 indicating relevance and 5 indicating a perfect match.
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+:::tip
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+The score does not represent a definitive ranking of the document. Instead, it should be utilized primarily to order search results and provide a relative indication of their relevance.
+
+:::
+
+## Basic concepts
+
+**`Target`**  
+Refers to an individual or entity that is identified and designated for restrictions based on their actions, affiliations, or status. This can include:  
+
+- **Sanctioned Individuals or Entities:** These are parties that have been placed on a sanctions list by governments or international bodies due to their involvement in activities such as terrorism, drug trafficking, corruption, or other internationally recognized offenses.
+
+- **Politically Exposed Persons (PEPs):** These are individuals who hold a prominent public position or function, which can make them higher risk for involvement in corruption or bribery due to their position and influence. PEPs themselves are not necessarily subject to sanctions, but they often require enhanced monitoring due to the risks associated with their status.
+
+**`Individual`**  
+This target refers to a natural person. This can be someone directly involved in activities that are grounds for sanctions such as terrorism, corruption, or other illegal acts. Individuals also include politically exposed persons (PEPs), who due to their public roles or influence, are subject to increased scrutiny in financial transactions to prevent corruption and bribery.   
+**`Entity`**  
+This target refers to a legal person or organization that can be held legally responsible. This includes companies, governments, charities, non-profit organizations, and any other non-human legal entities. 
+
+
+

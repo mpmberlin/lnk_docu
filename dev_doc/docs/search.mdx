@@ -14,11 +14,11 @@ The target can be an individual or a company.
 This is an anonymous search and the terms of the search as well as the results will not be persisted in our data base.
 
 
-## Request Parameters
+## Request parameters
 
 The request body for the search endpoint consists of two main components: the `search_term` and optional `filters`.
 
-### Search Term
+### Search term
 **`search_term`** (Type: ``List<String>, mandatory``) 
 
 Used to query against specific datasets such as sanctions lists and Politically Exposed Persons (PEP). It searches through target names and their aliases or other associated names.
@@ -28,35 +28,35 @@ Used to query against specific datasets such as sanctions lists and Politically 
 It should contain a minimum of three characters to ensure a valid search.
 :::tip
 
-To know more about _fuzzy_ search check the [concepts site](./concepts.mdx)
+Check [Fuzzy Logic and Scoring ](intro#Fuzzy-Logic-and-Scoring)
 
 :::
 
 ### Filter parameters
 Filters allow for refining search queries by targeting specific criteria. Below are the available filters:
 
-**`group_type`**  (Type: ``List<String>, optional``)
-
+**`group_type`**  
+Type: Array of strings, optional.  
 Determines the nature of the target, such as "individual" for private persons or "entity" for organizations and companies. Specifying "individual" will filter out all targets identified as entities and vice versa. Targets with an unknown group type will not be filtered out.
 Example: `["individual"]`, `["entity"]`, or `[]`
 
-**`nationality `** (Type: ``List<String>, optional``)
-
+**`nationality `** 
+Type: Array of strings, optional.  
 Must conform to ISO 3166-1 alpha-2 codes. This filter excludes nationalities for individuals or jurisdictions for entities that do not match the specified codes. Targets with unknown nationality or jurisdiction will not be filtered out.
 Example: `["US", "UK"]`
 
-**`source_type`** (Type: ``List<String>, optional``)
-
+**`source_type`**  
+Type: Array of strings, optional.  
 Specifies which databases to search through, options include "pep" for Politically Exposed Persons, "sanctions" for sanctions lists, or both. Leaving the array empty defaults to searching all databases.
 Example: `["pep"]`, `["sanctions"]`, or `[]`
 
-**`gender`** (Type: ``List<String>, optional``)
-
+**`gender`**  
+Type: Array of strings, optional.  
 Filters targets based on gender. Specifying "male" will exclude all targets where the gender is female and vice versa. Targets with an unknown gender will not be filtered out.
 Example: `["male"]`, `["female"]`, or `[]`
 
-**`birth_year`** (Type: ``List<String>, optional``)
-
+**`birth_year`**   
+Type: Array of strings, optional.  
 Accepts a year in the format "YYYY". This filter excludes targets whose birth year does not match the specified year(s). Targets with an unknown birth year will not be filtered out.
 Example: `["1984"]`, `["1984", "1985"]`, or `[]`
 
@@ -80,7 +80,7 @@ Setting **`group_type`** to `["entity"]` and **`source_type`** to `["pep"]` will
 :::
 ## Search examples
 
-### Individual in sanctions list sources
+### 1. Search example: Individual in sanctions list
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -189,7 +189,7 @@ fetch(url, {
     ```js
 [
     {
-        "target_id": "BISPL-c948e3c1d",
+        "id": "BISPL-c948e3c1d",
         "score": 2.3,
         "target": {
             "group_type": "individual",
@@ -220,7 +220,7 @@ fetch(url, {
         }]
     },
     {
-        "target_id": "MEFSIN-10f126371",
+        "id": "MEFSIN-10f126371",
         "score": 2.3,
         "target": {
             "group_type": "individual",
@@ -243,7 +243,7 @@ fetch(url, {
         }]
     },
     {
-        "target_id": "MEFSIN-202fb3711",
+        "id": "MEFSIN-202fb3711",
         "score": 2.2,
         "target": {
             "group_type": "individual",
@@ -259,7 +259,7 @@ fetch(url, {
             
 
 
-### Entity in sanctions list sources
+### 2 Search example: Entity in sanctions list sources
 
 
 <Tabs groupId="individual">
@@ -352,7 +352,7 @@ fetch(url, {
     ```js
 [
     {
-        "target_id": "OFAC1-1a544950a",
+        "id": "OFAC1-1a544950a",
         "score": 3.0,
         "target": {
             "group_type": "entity",
@@ -387,7 +387,7 @@ fetch(url, {
         "case": [{ "program": "Russia-eo14024" } ]
     },
     {
-        "target_id": "BISPL-b57b1d9aa",
+        "id": "BISPL-b57b1d9aa",
         "score": 3.0,
         "target": {
             "group_type": "entity",
@@ -407,7 +407,7 @@ fetch(url, {
 
 
 
-### Individual in Politically Exposed Peeople
+### 3 Search example: Individual in Politically Exposed Peeople
 
 
 <Tabs groupId="pep">
@@ -508,7 +508,7 @@ fetch(url, {
     ```js
 [
     {
-        "target_id": "pep-46b45ebe2",
+        "id": "pep-46b45ebe2",
         "score": 5.0,
         "target": {
             "name": "Barack Obama",
@@ -534,76 +534,8 @@ fetch(url, {
                     "value": "Stanley Ann Dunham",
                     "details": "mother of"
                 },
-                {
-                    "type": "first degree family",
-                    "value": "Malia Obama",
-                    "details": "child of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Sasha Obama",
-                    "details": "child of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Michelle Obama",
-                    "details": "spouse of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Auma Obama",
-                    "details": "sibling of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Maya Soetoro-Ng",
-                    "details": "sibling of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Malik Obama",
-                    "details": "sibling of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Mark Okoth Obama Ndesandjo",
-                    "details": "sibling of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "David Ndesandjo",
-                    "details": "sibling of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Abo Obama",
-                    "details": "sibling of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Bernard Obama",
-                    "details": "sibling of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "George Hussein Onyango Obama",
-                    "details": "sibling of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Lolo Soetoro",
-                    "details": "stepparent of"
-                },
-                {
-                    "type": "relatives",
-                    "value": "Madelyn Dunham",
-                    "details": "relative of"
-                },
-                {
-                    "type": "relatives",
-                    "value": "Stanley Armour Dunham",
-                    "details": "relative of"
-                },
+                // Additional target data here...
+                
                 {
                     "type": "relatives",
                     "value": "Lolo Soetoro",
@@ -642,3 +574,165 @@ fetch(url, {
 ```
   </div>
 </details>
+
+
+
+## Search response
+As seen in the examples above, a successful Search Response returns an array with results objects. 
+Below are the properties included in each result object: 
+1) `id`:
+Type: String. Unique identifier for the search result given by Checklynx. E.g.: 'BISP-e91d49bc'  
+Required: Yes.  
+
+2) `score`:
+Type: number (float). Represents the relevance of the search result, where higher scores indicate greater relevance. Scores range between 0.0 and 5.0.
+E.g.: 2.0  
+Required: Yes
+
+3) `target`: Type: Object. Detailed information about the target of the search according to the source.   
+Required: Yes  
+[See the content](search#target)
+
+4) `source`:
+Type: Object. Information about the source from which the target data was obtained. This object follows the structure defined in the Source schema.   
+Required: Yes  
+[See the content](search#source)
+
+
+5) `case`: 
+Type: Array of Object.
+Legal and administrative context surrounding the listing of the target.
+Checklynx unifies different cases for the same target and source. This it the reason why it can be shown as a list.
+[See the content](search#case)
+
+
+
+
+
+
+### Target
+The target object can contain:
+
+**`address`**  
+Type: Array of objects.  
+Last known address of the target.
+Each addresss object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
+Notice that address is used for the street information or general address when the source is not specific.  
+
+**`associates`**  
+Type: Array of objects.  
+Family or relatives associated with the target.  
+with the following string fields:
+  - `type`: Type of association. Can be `first degree family` , `relative of` or `linked to`
+  - `details`: Describes the relationship between the target and the associate. E.g.: "Mother of"
+  - `value`: refers to the associate name. E.g.: "Stanley Johnson"  
+
+
+**`birth_date`**  
+Type: Array of strings.  
+The target's date of birth.  
+It can happen that the exact birth date is unknown and therefore more than one is given. 
+Format 'YYYY-MM-DD'. E.g.: ['1961-03-09']
+
+**`birth_place`**  
+Type: Array of objects.  
+The location where the target was born.
+Each addresss object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
+Notice that address is used for the street information or general address when the source is not specific.  
+
+**`birth_year`**  
+Type: Array of strings.
+The target's year of birth.  
+It can happen that the exact birth year is unknown and therefore more than one is given. 
+Format 'YYYY'. E.g.: ['1961']
+
+**`contact_information`**  
+Type: Array of objects.  
+Fields:   
+- `email`: Type: Array of strings. E.g.: ["info@example.com"]
+- `telephone`: Type: Array of strings. E.g.: ["+1234567890"]
+- `website` Type: Array of strings. E.g.: ["http://www.info.com"]
+
+**`function`**  
+Type: Array of strings.   
+The role or position held by the target, including the duration of the role.
+E.g.: ['2023-09-01 to ?. Defence minister']
+
+**`gender`**   
+Type: String.  
+The gender of the target can be female or male. 
+
+
+**`group_type`**  
+Type: String.  
+Indicates whether the target is an individual person or an entity (company, organization). 
+
+
+**`identification`**  
+Type: Array of objects.  
+Fields:   
+- `id`: Type: String. The identification number value. E.g.: '1234567890'
+- `type`: Type: String. Identification kind. E.g.: 'passport', 'national id'
+- `details`: Type: String. Additional details about the identification. E.g.: 'Germany National Identification Number'
+- `issuer`: Type: String. Entity that issued the ID. E.g.: 'Stadt Bonn, Germany'
+- `issue_date`: Type: String. Date when id was issued if known. 
+
+**`is_deceased`**  
+Type: boolean.  
+When true, it indicates that the target is deceased.  
+
+
+**`name`**  
+Type: String.  
+The full name of the target.  
+
+**`nationality`**  
+Type: Array of strings  
+Description: Nationality of the target, represented by ISO 3166-1 alpha-2 country codes.
+
+
+**`occupation`**  
+Type: Array of strings.  
+Description: The profession or job held by the target. E.g.: ['politician']
+
+**`other_names`**  
+Type: Array of strings.  
+Any aliases or other names used by the target.
+
+
+**`remarks`**  
+Type: Array of strings.  
+Additional notes or comments about the target, often regarding their status or activities. E.g.: ['Previously listed under UNSC Resolution...']
+
+
+
+**`title`**  
+Type: Array of strings.  
+Official titles or designations held by the target. E.g.: ['Brigadier General and Commander']
+
+
+
+
+### Source
+ 
+The source object can contain the following fields of string type:
+- `name`: Type: String. Official name of the organization which has listed the target.
+- `region`: Type: String. Country or region of the source.
+- `listing_id`: Type: String. Unique identifier given by the source to that target.
+- `source_type`: Type: String. type of source which can be "pep" or "sanctions"
+
+### Case
+Each case object can contain:
+- `program`: Type: String. The specific sanctions program or framework under which the target is listed. E.g.: "Autonomous (libya)"
+- `sanction_type`: Type: String. Specifies the type of sanctions imposed on the target, such as asset freeze, travel 
+- `basis`: Type: String. The legal foundation for the target's listing. E.g.: "Designated under the autonomous sanctions regulations 2011 on 2 march 2012. ..."
+- `designation_date`: Type: String. The date on which the target was officially designated under the specified sanctions. E.g.: "2023-09-01"
+- `since`: Type: String. The date when the listing was initially established. E.g.: "2023-09-01"
+- `updated_on`: Type: Array of strings. Type: Array of strings. The most recent dates on which the listing was updated.E.g.: ["2023-09-01"]
+- `to`: Type: String. The expiry date of the listing, indicating until when it is valid. E.g.: "2029-09-01"
+- `url`: Type: String. A URL to the official online listing or documentation related to the case.
+- `other_ids`: Type: Array of strings. Other identifiers for this target listing in other oficial sources.
+
+
+
+

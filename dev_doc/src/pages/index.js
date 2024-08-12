@@ -9,6 +9,7 @@ import Heading from '@theme/Heading';
 import styles from './index.module.css';
 import "../App.css"
 
+
 /**
  * Renders the header component for the homepage.
  *
@@ -34,7 +35,7 @@ export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Checklynx developers`}
+      title={`Checklynx Developers`}
       description="Checklyns developers' portal">
       <HomepageHeader />
       <main>

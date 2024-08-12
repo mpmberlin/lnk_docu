@@ -1,0 +1,18 @@
+{
+  "urls": {
+    "checklynx_app": "https://app.checklynx.com",
+    "landing_url": "https://checklynx.com",
+    "dev_portal": "https://docs.checklynx.com",
+    "swagger_url": "https://app.swaggerhub.com/apis/checklynx-ai/checklynx/",
+    "postman_url": "https://documenter.getpostman.com/view/37023208/2sA3kRHiM5"
+  },
+  "email": {
+    "support": "support@checklynx.com"
+  },
+
+  "external_url":{
+    "swagger":"https://app.swaggerhub.com/apis/checklynx-ai/checklynx/0.0.2#/Target"
+  }
+  
+
+}

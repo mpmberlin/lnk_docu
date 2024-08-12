@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 description: Access the API securely
 sidebar_label: Authentication
 title: Authentication
@@ -21,13 +21,12 @@ Here’s how to get started:
 - Log In to the App UI Console.
 - Navigate to the API security tab.
 - Click "Add API key", enter a friendly name for it and click on "Create Key".
-- You will be provided with an API Key Value. This Key value is unique to your company and will used to authenticate API requests.
+- You will be provided with an **API Key Value**. This Key value is unique to your company and will used to authenticate API requests.
 - It's extremely important to **store the Key Value securely** to prevent unauthorized access and potential security breaches
 :::danger Store your API Keys securely
 Always store your API keys in a secure location and never expose them in your front-end code or share them publicly. Consider using environment variables or secure vaults to manage access to your API keys.
 :::
 ## Make authorized request
-After securing your Client ID and Client Secret, the next step in utilizing our API is to exchange these credentials for an access token. The access token grants your application permission to make API requests.
 
 #### 1. Parameters
 To initiate the token exchange process, you need to send a request to our authorization server. This is done by making a POST request to the token endpoint. Ensure your request includes the following parameters:
