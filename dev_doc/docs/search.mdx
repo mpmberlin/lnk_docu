@@ -14,12 +14,23 @@ The target can be an individual or a company.
 This is an anonymous search and the terms of the search as well as the results will not be persisted in our data base.
 
 
-## Request parameters
+## Request Body for Search Endpoint
 
-The request body for the search endpoint consists of two main components: the `search_term` and optional `filters`.
+The request body for the search endpoint consists of two main components: the search fields and optional the filters`.
 
-### Search term
-**`search_term`** (Type: ``List<String>, mandatory``) 
+### Search fields
+- **`search_term`** (Type: String, mandatory if no `search_identity` is provided):  
+  The term used to search for names, alias, company names or vessel names.
+  Example: "Joe Doe"
+
+- **`search_identity`** (Type: String, mandatory if no `search_term` is provided):  
+  The specific identity to search for, such as a tax ID or similar identifier.  
+  Example: "taxid123"
+
+- **`search_logic`** (Type: `String, optional`):  
+  Defines the logical operation to combine search fields. Options include `"OR"` or `"AND"`.  
+  Example: `"OR"`
+
 
 Used to query against specific datasets such as sanctions lists and Politically Exposed Persons (PEP). It searches through target names and their aliases or other associated names.
 
@@ -37,8 +48,10 @@ Filters allow for refining search queries by targeting specific criteria. Below 
 
 **`group_type`**  
 Type: Array of strings, optional.  
-Determines the nature of the target, such as "individual" for private persons or "entity" for organizations and companies. Specifying "individual" will filter out all targets identified as entities and vice versa. Targets with an unknown group type will not be filtered out.
-Example: `["individual"]`, `["entity"]`, or `[]`
+Determines the nature of the target, such as "individual" for private persons, "entity" for organizations and companies, 
+"vessel" for ships, or "aircraft" for planes. Specifying "individual" will filter out all targets identified as entities, vessels,
+ and aircraft, and vice versa. Targets with an unknown group type will not be filtered out.
+Example: `["individual"]`, `["entity"]`, `["vessel"]`, `[""aircraft"]`
 
 **`nationality `** 
 Type: Array of strings, optional.  
@@ -78,6 +91,170 @@ When **`group_type`** is set to `["entity"]`, the only effective filter is `nati
 Setting **`group_type`** to `["entity"]` and **`source_type`** to `["pep"]` will yield no results.
 
 :::
+
+
+
+## Search response
+As seen in the examples above, a successful Search Response returns an array with results objects. 
+Below are the properties included in each result object: 
+1) `id`:
+Type: String. Unique identifier for the search result given by Checklynx. E.g.: 'BISP-e91d49bc'  
+Required: Yes.  
+
+2) `score`:
+Type: number (float). Represents the relevance of the search result, where higher scores indicate greater relevance. Scores range between 0.0 and 5.0.
+E.g.: 2.0  
+Required: Yes
+
+3) `target`: Type: Object. Detailed information about the target of the search according to the source.   
+Required: Yes  
+[See the content](search#target)
+
+4) `source`:
+Type: Object. Information about the source from which the target data was obtained. This object follows the structure defined in the Source schema.   
+Required: Yes  
+[See the content](search#source)
+
+
+5) `case`: 
+Type: Array of Object.
+Legal and administrative context surrounding the listing of the target.
+Checklynx unifies different cases for the same target and source. This it the reason why it can be shown as a list.
+[See the content](search#case)
+
+
+
+
+
+
+### Target
+The target object can contain:
+
+**`address`**  
+Type: Array of objects.  
+Last known address of the target.
+Each addresss object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
+Notice that address is used for the street information or general address when the source is not specific.  
+
+**`associates`**  
+Type: Array of objects.  
+Family or relatives associated with the target.  
+with the following string fields:
+  - `type`: Type of association. Can be `first degree family` , `relative of` or `linked to`
+  - `details`: Describes the relationship between the target and the associate. E.g.: "Mother of"
+  - `value`: refers to the associate name. E.g.: "Stanley Johnson"  
+
+
+**`birth_date`**  
+Type: Array of strings.  
+The target's date of birth.  
+It can happen that the exact birth date is unknown and therefore more than one is given. 
+Format 'YYYY-MM-DD'. E.g.: ['1961-03-09']
+
+**`birth_place`**  
+Type: Array of objects.  
+The location where the target was born.
+Each addresss object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
+Notice that address is used for the street information or general address when the source is not specific.  
+
+**`birth_year`**  
+Type: Array of strings.
+The target's year of birth.  
+It can happen that the exact birth year is unknown and therefore more than one is given. 
+Format 'YYYY'. E.g.: ['1961']
+
+**`contact_information`**  
+Type: Array of objects.  
+Fields:   
+- `email`: Type: Array of strings. E.g.: ["info@example.com"]
+- `telephone`: Type: Array of strings. E.g.: ["+1234567890"]
+- `website` Type: Array of strings. E.g.: ["http://www.info.com"]
+
+**`function`**  
+Type: Array of strings.   
+The role or position held by the target, including the duration of the role.
+E.g.: ['2023-09-01 to ?. Defence minister']
+
+**`gender`**   
+Type: String.  
+The gender of the target can be female or male. 
+
+
+**`group_type`**  
+Type: String.  
+Indicates whether the target is an individual person or an entity (company, organization). 
+
+
+**`identification`**  
+Type: Array of objects.  
+Fields:   
+- `id`: Type: String. The identification number value. E.g.: '1234567890'
+- `type`: Type: String. Identification kind. E.g.: 'passport', 'national id'
+- `details`: Type: String. Additional details about the identification. E.g.: 'Germany National Identification Number'
+- `issuer`: Type: String. Entity that issued the ID. E.g.: 'Stadt Bonn, Germany'
+- `issue_date`: Type: String. Date when id was issued if known. 
+
+**`is_deceased`**  
+Type: boolean.  
+When true, it indicates that the target is deceased.  
+
+
+**`name`**  
+Type: String.  
+The full name of the target.  
+
+**`nationality`**  
+Type: Array of strings  
+Description: Nationality of the target, represented by ISO 3166-1 alpha-2 country codes.
+
+
+**`occupation`**  
+Type: Array of strings.  
+Description: The profession or job held by the target. E.g.: ['politician']
+
+**`other_names`**  
+Type: Array of strings.  
+Any aliases or other names used by the target.
+
+
+**`remarks`**  
+Type: Array of strings.  
+Additional notes or comments about the target, often regarding their status or activities. E.g.: ['Previously listed under UNSC Resolution...']
+
+
+
+**`title`**  
+Type: Array of strings.  
+Official titles or designations held by the target. E.g.: ['Brigadier General and Commander']
+
+
+
+
+### Source
+ 
+The source object can contain the following fields of string type:
+- `name`: Type: String. Official name of the organization which has listed the target.
+- `region`: Type: String. Country or region of the source.
+- `listing_id`: Type: String. Unique identifier given by the source to that target.
+- `source_type`: Type: String. type of source which can be "pep" or "sanctions"
+
+### Case
+Each case object can contain:
+- `program`: Type: String. The specific sanctions program or framework under which the target is listed. E.g.: "Autonomous (libya)"
+- `sanction_type`: Type: String. Specifies the type of sanctions imposed on the target, such as asset freeze, travel 
+- `basis`: Type: String. The legal foundation for the target's listing. E.g.: "Designated under the autonomous sanctions regulations 2011 on 2 march 2012. ..."
+- `designation_date`: Type: String. The date on which the target was officially designated under the specified sanctions. E.g.: "2023-09-01"
+- `since`: Type: String. The date when the listing was initially established. E.g.: "2023-09-01"
+- `updated_on`: Type: Array of strings. Type: Array of strings. The most recent dates on which the listing was updated.E.g.: ["2023-09-01"]
+- `to`: Type: String. The expiry date of the listing, indicating until when it is valid. E.g.: "2029-09-01"
+- `url`: Type: String. A URL to the official online listing or documentation related to the case.
+- `other_ids`: Type: Array of strings. Other identifiers for this target listing in other oficial sources.
+
+
+
+
+
+
 ## Search examples
 
 ### 1. Search example: Individual in sanctions list
@@ -577,162 +754,173 @@ fetch(url, {
 
 
 
-## Search response
-As seen in the examples above, a successful Search Response returns an array with results objects. 
-Below are the properties included in each result object: 
-1) `id`:
-Type: String. Unique identifier for the search result given by Checklynx. E.g.: 'BISP-e91d49bc'  
-Required: Yes.  
-
-2) `score`:
-Type: number (float). Represents the relevance of the search result, where higher scores indicate greater relevance. Scores range between 0.0 and 5.0.
-E.g.: 2.0  
-Required: Yes
-
-3) `target`: Type: Object. Detailed information about the target of the search according to the source.   
-Required: Yes  
-[See the content](search#target)
-
-4) `source`:
-Type: Object. Information about the source from which the target data was obtained. This object follows the structure defined in the Source schema.   
-Required: Yes  
-[See the content](search#source)
+### 4 Search example: Vessel by identity
 
 
-5) `case`: 
-Type: Array of Object.
-Legal and administrative context surrounding the listing of the target.
-Checklynx unifies different cases for the same target and source. This it the reason why it can be shown as a list.
-[See the content](search#case)
+<Tabs groupId="vessel">
+
+  <TabItem value="json" label="json">
+```js
+body={
+  "search_identity":"9305221",
+  "filters":{
+    "source_type": ["sanctions"],
+    "group_type": ["vessel"]
+   }
+}
+```
+  </TabItem>
+
+  <TabItem value="py" label="python">
+```js
+import requests
+
+api_key_value = 'your-API-Key'
+base_url='base_url'
+
+body={
+  "search_identity":"9305221",
+  "filters":{
+    "source_type": ["sanctions"],
+    "group_type": ["vessel"]
+    }
+    
+}
+url = f"{base_url}/search"
+headers = {
+    "x-api-key": api_key_value,
+    "Content-Type": "application/json"
+}
+response = requests.post(url, headers=headers, json=body)
+if response.status_code == 200:
+    print("Request successful:", response.json())
+else:
+    print("Failed to make request, status code:", response.status_code)
+```
+</TabItem>
+  <TabItem value="js" label="javascript">
+```js
+const fetch = require('node-fetch');
+const apiKeyValue = 'your-API-Key';
+const baseUrl = 'base_url';
+
+const body={
+      "search_identity":"9305221",
+      "filters": {
+        "source_type": ["sanctions"],
+        "group_type": ["vessel"]
+      } 
+};
+
+const url = `${baseUrl}/search`;
+const headers = {
+    "x-api-key": apiKeyValue,
+    "Content-Type": "application/json"
+};
+fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body)
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Failed to fetch: ' + response.status);
+    }
+})
+.then(data => {
+    console.log("Request successful:", data);
+})
+.catch(error => {
+    console.log("Error in making request:", error.message);
+});
 
 
+```
+</TabItem>
+</Tabs>
 
-
-
-
-### Target
-The target object can contain:
-
-**`address`**  
-Type: Array of objects.  
-Last known address of the target.
-Each addresss object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
-Notice that address is used for the street information or general address when the source is not specific.  
-
-**`associates`**  
-Type: Array of objects.  
-Family or relatives associated with the target.  
-with the following string fields:
-  - `type`: Type of association. Can be `first degree family` , `relative of` or `linked to`
-  - `details`: Describes the relationship between the target and the associate. E.g.: "Mother of"
-  - `value`: refers to the associate name. E.g.: "Stanley Johnson"  
-
-
-**`birth_date`**  
-Type: Array of strings.  
-The target's date of birth.  
-It can happen that the exact birth date is unknown and therefore more than one is given. 
-Format 'YYYY-MM-DD'. E.g.: ['1961-03-09']
-
-**`birth_place`**  
-Type: Array of objects.  
-The location where the target was born.
-Each addresss object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
-Notice that address is used for the street information or general address when the source is not specific.  
-
-**`birth_year`**  
-Type: Array of strings.
-The target's year of birth.  
-It can happen that the exact birth year is unknown and therefore more than one is given. 
-Format 'YYYY'. E.g.: ['1961']
-
-**`contact_information`**  
-Type: Array of objects.  
-Fields:   
-- `email`: Type: Array of strings. E.g.: ["info@example.com"]
-- `telephone`: Type: Array of strings. E.g.: ["+1234567890"]
-- `website` Type: Array of strings. E.g.: ["http://www.info.com"]
-
-**`function`**  
-Type: Array of strings.   
-The role or position held by the target, including the duration of the role.
-E.g.: ['2023-09-01 to ?. Defence minister']
-
-**`gender`**   
-Type: String.  
-The gender of the target can be female or male. 
-
-
-**`group_type`**  
-Type: String.  
-Indicates whether the target is an individual person or an entity (company, organization). 
-
-
-**`identification`**  
-Type: Array of objects.  
-Fields:   
-- `id`: Type: String. The identification number value. E.g.: '1234567890'
-- `type`: Type: String. Identification kind. E.g.: 'passport', 'national id'
-- `details`: Type: String. Additional details about the identification. E.g.: 'Germany National Identification Number'
-- `issuer`: Type: String. Entity that issued the ID. E.g.: 'Stadt Bonn, Germany'
-- `issue_date`: Type: String. Date when id was issued if known. 
-
-**`is_deceased`**  
-Type: boolean.  
-When true, it indicates that the target is deceased.  
-
-
-**`name`**  
-Type: String.  
-The full name of the target.  
-
-**`nationality`**  
-Type: Array of strings  
-Description: Nationality of the target, represented by ISO 3166-1 alpha-2 country codes.
-
-
-**`occupation`**  
-Type: Array of strings.  
-Description: The profession or job held by the target. E.g.: ['politician']
-
-**`other_names`**  
-Type: Array of strings.  
-Any aliases or other names used by the target.
-
-
-**`remarks`**  
-Type: Array of strings.  
-Additional notes or comments about the target, often regarding their status or activities. E.g.: ['Previously listed under UNSC Resolution...']
-
-
-
-**`title`**  
-Type: Array of strings.  
-Official titles or designations held by the target. E.g.: ['Brigadier General and Commander']
-
-
-
-
-### Source
- 
-The source object can contain the following fields of string type:
-- `name`: Type: String. Official name of the organization which has listed the target.
-- `region`: Type: String. Country or region of the source.
-- `listing_id`: Type: String. Unique identifier given by the source to that target.
-- `source_type`: Type: String. type of source which can be "pep" or "sanctions"
-
-### Case
-Each case object can contain:
-- `program`: Type: String. The specific sanctions program or framework under which the target is listed. E.g.: "Autonomous (libya)"
-- `sanction_type`: Type: String. Specifies the type of sanctions imposed on the target, such as asset freeze, travel 
-- `basis`: Type: String. The legal foundation for the target's listing. E.g.: "Designated under the autonomous sanctions regulations 2011 on 2 march 2012. ..."
-- `designation_date`: Type: String. The date on which the target was officially designated under the specified sanctions. E.g.: "2023-09-01"
-- `since`: Type: String. The date when the listing was initially established. E.g.: "2023-09-01"
-- `updated_on`: Type: Array of strings. Type: Array of strings. The most recent dates on which the listing was updated.E.g.: ["2023-09-01"]
-- `to`: Type: String. The expiry date of the listing, indicating until when it is valid. E.g.: "2029-09-01"
-- `url`: Type: String. A URL to the official online listing or documentation related to the case.
-- `other_ids`: Type: Array of strings. Other identifiers for this target listing in other oficial sources.
-
-
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+[
+   
+    {
+        "id": "4214dcb5d1",
+        "target": {
+            "name": "Artin",
+            "group_type": "vessel",
+            "identification": [
+                {
+                    "id": "9305221",
+                    "type": "registration number",
+                    "details": "registration id"
+                }
+            ]
+        },
+        "source": {
+            "listing_id": "25297",
+            "region": "USA",
+            "name": "Bureau of Industry and Security",
+            "id": "BISPL",
+            "source_type": "sanctions"
+        },
+        "score": "2.66",
+        "case": [
+            {
+                "basis": "Specially designated nationals (sdn) - treasury department",
+                "program": "Iran; npwmd; ifsr",
+                "url": "https://home.treasury.gov/policy-issues/financial-sanctions/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists"
+            }
+        ],
+        "vessel": {
+            "IMO": "9305221"
+        }
+    },
+    {
+        "id": "e1e63dd4e1",
+        "target": {
+            "name": "Artin",
+            "nationality": [
+                "IR"
+            ],
+            "group_type": "vessel",
+            "identification": [
+                {
+                    "id": "IMO 9305221",
+                    "type": "registration number",
+                    "details": "Vessel Registration Identification"
+                }
+            ],
+            "remarks": [
+                "(Linked To: ISLAMIC REPUBLIC OF IRAN SHIPPING LINES)"
+            ]
+        },
+        "source": {
+            "listing_id": "25297",
+            "region": "USA",
+            "name": "Office of Foreign Assets Control. Specially Designated Nationals (SDN) List",
+            "id": "OFAC",
+            "source_type": "sanctions"
+        },
+        "score": "2.4",
+        "case": [
+            {
+                "program": "Ifsr, iran, npwmd"
+            }
+        ],
+        "vessel": {
+            "type": "Bulk Carrier",
+            "flag": "Iran",
+            "IMO": "9305221"
+        }
+    }
+]
+  
+```
+  </div>
+</details>
 
 
