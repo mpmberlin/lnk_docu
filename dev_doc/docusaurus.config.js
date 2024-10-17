@@ -14,7 +14,7 @@ const config = {
   favicon: 'img/CL_pink.svg',
 
   // Set the production url of your site here
-  url: 'https://www.checklynx.com',
+  url: 'https://www.docs.checklynx.com',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
