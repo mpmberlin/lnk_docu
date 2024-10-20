@@ -51,6 +51,12 @@ const config = {
         theme: {
           customCss: './src/css/custom.css',
         },
+        sitemap: {
+          changefreq: 'monthly', // Frequency search engines should check for updates
+          priority: 0.2,        // Default priority of URLs
+          ignorePatterns: [], // URLs to exclude from the sitemap
+          filename: 'sitemap.xml', // Name of the sitemap file
+        },
       }),
     ],
   ],
