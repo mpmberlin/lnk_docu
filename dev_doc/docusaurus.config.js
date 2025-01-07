@@ -119,7 +119,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Checklynx`,
+        copyright: `Copyright © ${new Date().getFullYear()} Checklynx all rights reserved`,
       },
       prism: {
         theme: prismThemes.github,
