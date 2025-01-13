@@ -122,6 +122,9 @@ Legal and administrative context surrounding the listing of the target.
 Checklynx unifies different cases for the same target and source. This it the reason why it can be shown as a list.
 [See the content](search#case)
 
+5) `match_profile_id`: 
+Type: String.
+Checklynx uses AI to group matches from various sources that refer to the same target into clusters. Each unique match_profile_id identifies a cluster representing one target. For example, all entries with match_profile_id="0" are associated with the same target.
 
 
 
@@ -394,7 +397,8 @@ fetch(url, {
             "basis": "Specially Designated Nationals (SDN) - Treasury Department",
             "program": "IRAQ2",
             "url": "https://home.treasury.gov/policy-issues/financial-sanctions/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists"
-        }]
+        }],
+        "match_profile_id": "0"
     },
     {
         "id": "MEFSIN-10f126371",
@@ -417,7 +421,8 @@ fetch(url, {
         "case": [{
             "other_ids": ["EU.39.56"],
             "basis": "(CE) 1210/2003 du 07/07/2003 (ONU Irak - RCSNU 1518 (2003) et R (CE) 1210/2003)"
-        }]
+        }],
+        "match_profile_id": "0"
     },
     {
         "id": "MEFSIN-202fb3711",
@@ -561,7 +566,8 @@ fetch(url, {
             "name": "Office of foreign assets control. specially designated nationals list",
             "source_type": "sanctions"
         },
-        "case": [{ "program": "Russia-eo14024" } ]
+        "case": [{ "program": "Russia-eo14024" } ],
+        "match_profile_id": "0"
     },
     {
         "id": "BISPL-b57b1d9aa",
@@ -875,6 +881,7 @@ fetch(url, {
                 "url": "https://home.treasury.gov/policy-issues/financial-sanctions/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists"
             }
         ],
+        "match_profile_id": "0",
         "vessel": {
             "IMO": "9305221"
         }
@@ -911,6 +918,7 @@ fetch(url, {
                 "program": "Ifsr, iran, npwmd"
             }
         ],
+        "match_profile_id": "0"
         "vessel": {
             "type": "Bulk Carrier",
             "flag": "Iran",
