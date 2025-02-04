@@ -52,7 +52,7 @@ import requests
 api_key_value = 'your-API-Key'
 base_url='https://api.checklynx.com/v1'
 
-url = f"{base_url}/search"
+url = f"{base_url}/check/sanctions_pep"
 body={
     "search_term": "John Wick",
     "filters": {}
@@ -75,7 +75,7 @@ else:
   ```jsx 
 const apiKeyValue = 'your-API-Key';
 const baseUrl = 'baseUrl';
-const url = `${baseUrl}/search`; // Replace baseUrl with your actual base URL
+const url = `${baseUrl}/check/sanctions_pep`; // Replace baseUrl with your actual base URL
 const body = {
   search_term: "John Wick",
   filters: {}

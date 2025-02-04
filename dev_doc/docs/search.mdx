@@ -7,7 +7,7 @@ title: Search
 
 # Search
 
-`POST`  /search
+`POST`  /check/sanctions_pep
 
 Create a search to retrieve if a target is in a Sanctions list or is a Politically Exposed Person.
 The target can be an individual or a company.
@@ -300,7 +300,7 @@ body = {
         "birth_year": ["1951"]  # Optional, format "YYYY"
     }
 }
-url = f"{base_url}/search"
+url = f"{base_url}/check/sanctions_pep"
 headers = {
     "x-api-key": api_key_value,
     "Content-Type": "application/json"
@@ -331,7 +331,7 @@ const body = {
     }
 };
 
-const url = `${baseUrl}/search`;
+const url = `${baseUrl}/check/sanctions_pep`;
 const headers = {
     "x-api-key": apiKeyValue,
     "Content-Type": "application/json"
@@ -473,7 +473,7 @@ body = {
         "group_type": ["entity"],  
     }
 }
-url = f"{base_url}/search"
+url = f"{base_url}/check/sanctions_pep"
 headers = {
     "x-api-key": api_key_value,
     "Content-Type": "application/json"
@@ -499,7 +499,7 @@ const body = {
     }
 };
 
-const url = `${baseUrl}/search`;
+const url = `${baseUrl}/check/sanctions_pep`;
 const headers = {
     "x-api-key": apiKeyValue,
     "Content-Type": "application/json"
@@ -627,7 +627,7 @@ body={
         "birth_year": ["1961"]
       } 
 }
-url = f"{base_url}/search"
+url = f"{base_url}/check/sanctions_pep"
 headers = {
     "x-api-key": api_key_value,
     "Content-Type": "application/json"
@@ -656,7 +656,7 @@ const body={
       } 
 };
 
-const url = `${baseUrl}/search`;
+const url = `${baseUrl}/check/sanctions_pep`;
 const headers = {
     "x-api-key": apiKeyValue,
     "Content-Type": "application/json"
@@ -792,7 +792,7 @@ body={
     }
     
 }
-url = f"{base_url}/search"
+url = f"{base_url}/check/sanctions_pep"
 headers = {
     "x-api-key": api_key_value,
     "Content-Type": "application/json"
@@ -818,7 +818,7 @@ const body={
       } 
 };
 
-const url = `${baseUrl}/search`;
+const url = `${baseUrl}/check/sanctions_pep`;
 const headers = {
     "x-api-key": apiKeyValue,
     "Content-Type": "application/json"
