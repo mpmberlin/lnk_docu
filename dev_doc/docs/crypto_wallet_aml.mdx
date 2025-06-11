@@ -14,18 +14,19 @@ import TabItem from '@theme/TabItem';
 
 Set of endpoints to analyze the score of a wallet address and subscribe to monitoring service.
 
-## 1. Common request body
 
 
 
 
-# Cryptos AML
 
-`POST` /check/crypto_address
-
-Set of endpoints to analyze the score of a wallet address and subscribe to monitoring service.
-
-## 1. Example of request body
+#  Common request body
+Just needs `chain` an `address` and can be used for the following methods:
+- [Address score](#1-address-score)
+- [Address actions](#2-address-actions)
+- [Address counterparty](#3address-counterparty)
+- [Address labels](#4-address-labels)
+- [Address overview](#5-address-overview)
+- [Address profile](#6-address-profile)
 
 <Tabs groupId="addressRequest">
 
@@ -96,7 +97,7 @@ fetch(`${baseUrl}/check/crypto/address/score`, {
 
 
 
-## 1. Address Score
+## 1. Address score
 
 `POST` /check/crypto_address/score
 
@@ -108,20 +109,20 @@ High: 71 – 90;
 Severe: 91 – 100;
 
 ### Response fields
-- **`risk_score`** (Type: Integer):  
+- **`risk_score`** (Integer):  
   Normalized AML risk rating from 3 to 100; higher is more risky.
-- **`hacking_event`** (Type: Saddamtring):  
+- **`hacking_event`** (Saddamtring):  
   Name of any known breach or exploit linked to this address/transaction; empty if none.
-- **`risk_score`** (Type: Integer):  
+- **`risk_score`** (Integer):  
   Normalized AML risk rating from 3 to 100; higher is more risky.
-- **`flags`** (Type: Integer):  
+- **`flags`** (Integer):  
   Human-readable tags summarizing key risk drivers.
 - **`risk_detail`** (Array[Object]):  
   - **`label`** (String): Risk category name (e.g. `"Scam Token"`, `"Phishing"`).  
   - **`type`** (String): Classification (`"malicious"`, `"suspected_malicious"`, `"high_risk"`).  
-  - **`volume`** (Number): Amount transacted in this incident.  
+  - **`volume`** (Float): Amount transacted in this incident.  
   - **`address`** (String): Counterparty or related address.  
-  - **`percent`** (Number): Fraction of total volume exposed by this incident (e.g. `0.453` = 45.3%).  
+  - **`percent`** (Float): Fraction of total volume exposed by this incident (e.g. `0.453` = 45.3%).  
 
 
 <details>
@@ -183,18 +184,15 @@ Severe: 91 – 100;
 
 ## 2. Address actions
 `POST` /check/crypto_address/action
-
-Summarizes the count and share of inbound and outbound transactions by category
-
+Summarizes the count and share of inbound and outbound transactions by category.
 ### Response fields
-
-- **`received_txs`** (Type: Array[Object])  
+- **`received_txs`** (Array[Object])  
   List of inbound transaction categories. Each object contains:
   - **`action`** (String): Category name (e.g. “Swap”, “DEX”, “Bridge”).  
   - **`count`** (Integer): Number of transactions in this category.  
-  - **`proportion`** (Number): Percentage of total received transactions (e.g. `27.08` = 27.08%).
+  - **`proportion`** (Float): Percentage of total received transactions (e.g. `27.08` = 27.08%).
 
-- **`spent_txs`** (Type: Array[Object])  
+- **`spent_txs`** (Array[Object])  
   List of outbound transaction categories. Each object contains the same fields as `received_txs`:
  
 <details>
@@ -238,3 +236,181 @@ Summarizes the count and share of inbound and outbound transactions by category
   </div>
 </details>
 
+
+## 3. Address counterparty
+`POST` /check/crypto_address/counterparty
+Returns a ranked list of counterparties by total transaction volume for the given address, showing how much value flowed to each and its share of the overall activity.
+### Response fields
+- **`Response`** (Array[Object])  
+  List of inbound transaction categories. Each object contains:
+  - **`name`** (String): Counterparty identifier or label. 
+  - **`amount`** (Integer):  Total transaction volume associated with this counterparty.    
+  - **`percent`** (Float): Share of the overall volume attributed to this counterparty. (counterparty.amount / sum_of_all.amounts) × 100
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+    [
+    {
+        "name": "Unknown",
+        "amount": 10803875425.633,
+        "percent": 50.401
+    },
+    {
+        "name": "Null",
+        "amount": 6625408247.866,
+        "percent": 30.908
+    },
+    {
+        "name": "Vb 2",
+        "amount": 1161695020.584,
+        "percent": 5.419
+    },
+    {
+        "name": "India Covid-Crypto Relief Fund",
+        "amount": 920024211.061,
+        "percent": 4.292
+    },
+    {
+        "name": "Vb 3",
+        "amount": 860111896.49,
+        "percent": 4.013
+    },
+    ...
+    ]
+    ```
+  </div>
+</details>
+
+
+
+## 4. Address labels
+`POST` /check/crypto_address/labels
+Fetches human-readable tags and a category for the specified wallet address, 
+helping you identify the entity type (e.g. exchange, service) or on-chain roles (e.g. MEV bot, whale) associated with it.
+
+
+### Response fields
+- **`Response`** (Object)  
+  List of inbound transaction categories. Each object contains:
+  - **`labels`** (Array[String]):  List of tags assigned to the address (e.g. protocol names, ENS domains).  
+  - **`category`** (String): Broad classification of the address (e.g. `"exchange"`, `"defi"`, `"service"`).
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+   {
+    "labels": [
+        
+        "chinatownmarket.eth",
+        "norvatis.eth",
+        "wyorealtor.eth"
+    ],
+    "category": "defi"
+}
+    ```
+  </div>
+</details>
+
+## 5. Address overview
+`POST` /check/crypto_address/overview
+Returns balance and activity statistics for the specified wallet address, 
+including launch and recent activity timestamps, cumulative received vs. spent amounts, and transaction counts.
+
+- **`Response`** (Object)  
+    - **`balance`** (Type: Float)  
+    Current token balance of the address.  
+
+    - **`txs_count`** (Type: Integer)  
+    Total number of on-chain transactions involving this address.  
+
+    - **`first_seen`** (Type: Integer)  
+    Unix timestamp of the address’s first recorded transaction.  
+
+    - **`last_seen`** (Type: Integer)  
+    Unix timestamp of the address’s most recent transaction.  
+
+    - **`total_received`** (Type: Float)  
+    Cumulative amount received by the address.  
+
+    - **`total_spent`** (Type: Float)  
+    Cumulative amount sent from the address.  
+
+    - **`received_txs_count`** (Type: Integer)  
+    Count of incoming transactions.  
+
+    - **`spent_txs_count`** (Type: Integer)  
+    Count of outgoing transactions.  
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+   {
+    "balance": 40.5118,
+    "txs_count": 2315,
+    "first_seen": 1541812192,
+    "last_seen": 1746705119,
+    "total_received": 916317.2501,
+    "total_spent": 916273.5499,
+    "received_txs_count": 1627,
+    "spent_txs_count": 288
+}
+    ```
+  </div>
+</details>
+
+
+
+## 6. Address Profile  
+**POST** `/check/crypto_address/profile`  
+
+Returns a high-level snapshot of on-chain roles, malicious incidents, and off-chain relations for a given wallet address.
+
+### Response fields
+
+- **`use_platform`** (Object)  
+  Breakdown of address activity by platform type:  
+  - **`exchange`**, **`dex`**, **`mixer`**, **`nft`** each contain:  
+    - `count` (Integer): Number of interactions  
+    - `<type>_list` (Array[String]): Top entities (e.g. exchange names, DEX protocols)
+
+- **`malicious_event`** (Object)  
+  Categorized count and examples of illicit events:  
+  - `phishing`, `ransom`, `stealing` each contain:  
+    - `count` (Integer)  
+    - `<event>_list` (Array[String]): Related tags or labels
+
+- **`relation_info`** (Object)  
+  Off-chain links by category:  
+  - `wallet`, `ens`, `twitter` each contain:  
+    - `count` (Integer)  
+    - `<relation>_list` (Array[String]): Top wallet apps, ENS names, or Twitter handles
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+    {
+      "use_platform": {
+        "exchange": { "count": 9,  "exchange_list": [ /* ... */ ] },
+        "dex":      { "count": 35, "dex_list":      [ /* ... */ ] },
+        "mixer":    { "count": 1,  "mixer_list":    [ "FixedFloat" ] },
+        "nft":      { "count": 0,  "nft_list":      [] }
+      },
+      "malicious_event": {
+        "phishing": { "count": 1, "phishing_list": ["Fake_Phishing198655", "Scam Token", "Fake_Phishing318739"] },
+        "ransom":   { "count": 0, "ransom_list":   [] },
+        "stealing": { "count": 0, "stealing_list": [] }
+      },
+      "relation_info": {
+        "wallet":  { "count": 7,  "wallet_list":  [ /* ... */ ] },
+        "ens":     { "count": 81, "ens_list":     [ /* ... */ ] },
+        "twitter": { "count": 15, "twitter_list": [ /* ... */ ] }
+      }
+    }
+    ```
+  </div>
+</details>
