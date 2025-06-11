@@ -1,0 +1,240 @@
+---
+sidebar_position: 4
+description: Overview of AML crypto wallet scoring & monitoring APIs
+sidebar_label: Cryptos AML
+title: Cryptos AML
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Cryptos AML
+
+`POST`  /check/crypto_address
+
+Set of endpoints to analyze the score of a wallet address and subscribe to monitoring service.
+
+## 1. Common request body
+
+
+
+
+# Cryptos AML
+
+`POST` /check/crypto_address
+
+Set of endpoints to analyze the score of a wallet address and subscribe to monitoring service.
+
+## 1. Example of request body
+
+<Tabs groupId="addressRequest">
+
+  <TabItem value="json" label="JSON">
+
+```json
+{
+  "chain": "ETH",
+  "address": "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B"
+}
+```
+
+  </TabItem>
+
+  <TabItem value="py" label="Python">
+
+```python
+import requests
+
+api_key = "your-API-Key"
+base_url = "https://api.checklynx.com/v1"
+body = {
+  "chain": "ETH",  # Blockchain symbol, e.g. "ETH" or "BTC"
+  "address": "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B"  # Wallet address
+}
+headers = {
+  "x-api-key": api_key,
+  "Content-Type": "application/json"
+}
+response = requests.post(f"{base_url}/check/crypto/address/score", headers=headers, json=body)
+if response.status_code == 200:
+  print("Success:", response.json())
+else:
+  print("Error:", response.status_code, response.text)
+```
+
+  </TabItem>
+
+  <TabItem value="js" label="JavaScript">
+
+```js
+const fetch = require("node-fetch");
+
+const apiKey = "your-API-Key";
+const baseUrl = "https://api.checklynx.com/v1";
+
+const body = {
+  chain: "ETH",  // Blockchain symbol, e.g. "ETH" or "BTC"
+  address: "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B"  // Wallet address
+};
+
+fetch(`${baseUrl}/check/crypto/address/score`, {
+  method: "POST",
+  headers: {
+    "x-api-key": apiKey,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(body)
+})
+  .then(res => res.ok ? res.json() : Promise.reject(res.status))
+  .then(data => console.log("Success:", data))
+  .catch(err => console.error("Error:", err));
+```
+
+  </TabItem>
+
+</Tabs>
+
+
+
+## 1. Address Score
+
+`POST` /check/crypto_address/score
+
+Retrieves a normalized AML risk score and detailed risk metadata for a given blockchain address.
+A higher score means greater AML risk; the API also classifies it into four severity bands:
+Low: 0 – 30; 
+Moderate: 31 – 70;
+High: 71 – 90;
+Severe: 91 – 100;
+
+### Response fields
+- **`risk_score`** (Type: Integer):  
+  Normalized AML risk rating from 3 to 100; higher is more risky.
+- **`hacking_event`** (Type: Saddamtring):  
+  Name of any known breach or exploit linked to this address/transaction; empty if none.
+- **`risk_score`** (Type: Integer):  
+  Normalized AML risk rating from 3 to 100; higher is more risky.
+- **`flags`** (Type: Integer):  
+  Human-readable tags summarizing key risk drivers.
+- **`risk_detail`** (Array[Object]):  
+  - **`label`** (String): Risk category name (e.g. `"Scam Token"`, `"Phishing"`).  
+  - **`type`** (String): Classification (`"malicious"`, `"suspected_malicious"`, `"high_risk"`).  
+  - **`volume`** (Number): Amount transacted in this incident.  
+  - **`address`** (String): Counterparty or related address.  
+  - **`percent`** (Number): Fraction of total volume exposed by this incident (e.g. `0.453` = 45.3%).  
+
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+    {
+   
+    "risk_score": 3,
+    hacking_event: ""
+    "flags": [
+        "Interact With Malicious Address",
+        "Interact With Suspected Malicious Address",
+        "Interact With High-risk Tag Address"
+    ],
+    "risk_detail": [
+        {
+            "label": "Scam Token",
+            "type": "suspected_malicious",
+            "volume": 3132.761,
+            "address": "0xc41ada125a0469d31be86129324c0f14349d03f2",
+            "percent": 0.0
+        },
+        {
+            "label": "FixedFloat",
+            "type": "high_risk",
+            "volume": 148.719,
+            "address": "0x4e5b2e1dc63f6b91cb6cd759936495434c7e972f",
+            "percent": 0.0
+        },
+        {
+            "label": "Phishing",
+            "type": "suspected_malicious",
+            "volume": 39.697,
+            "address": "0x8aa4e5cdaf7abac39c3c52e52ae58e0739edb405",
+            "percent": 0.0
+        },
+        {
+            "label": "Fake_Phishing198655",
+            "type": "malicious",
+            "volume": 26.465,
+            "address": "0x44969ffb6d3277e47b7646cac94def716cc6840a",
+            "percent": 0.0
+        },
+        {
+            "label": "Fake_Phishing318739",
+            "type": "malicious",
+            "volume": 0.051,
+            "address": "0x106a4821eef5d786fb4253909652910c59bc7765",
+            "percent": 0.0
+        }
+    ]
+}
+
+```
+  </div>
+</details>
+
+
+## 2. Address actions
+`POST` /check/crypto_address/action
+
+Summarizes the count and share of inbound and outbound transactions by category
+
+### Response fields
+
+- **`received_txs`** (Type: Array[Object])  
+  List of inbound transaction categories. Each object contains:
+  - **`action`** (String): Category name (e.g. “Swap”, “DEX”, “Bridge”).  
+  - **`count`** (Integer): Number of transactions in this category.  
+  - **`proportion`** (Number): Percentage of total received transactions (e.g. `27.08` = 27.08%).
+
+- **`spent_txs`** (Type: Array[Object])  
+  List of outbound transaction categories. Each object contains the same fields as `received_txs`:
+ 
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+    {
+      "received_txs": [
+        {
+          "action": "Swap",
+          "count": 286,
+          "proportion": 27.08
+        },
+        {
+          "action": "Liquidity market making",
+          "count": 7,
+          "proportion": 0.66
+        },
+        {
+          "action": "Transfer",
+          "count": 384,
+          "proportion": 36.36
+        },
+        
+      ],
+      "spent_txs": [
+        {
+          "action": "Exchange",
+          "count": 33,
+          "proportion": 45.21
+        },
+        {
+          "action": "Transfer",
+          "count": 33,
+          "proportion": 45.21
+        }
+       
+      ]
+    }
+    ```
+  </div>
+</details>
+
