@@ -1,14 +1,14 @@
 ---
 sidebar_position: 4
-description: Overview of AML crypto wallet scoring & monitoring APIs
-sidebar_label: Cryptos AML
-title: Cryptos AML
+description: Crypto Address Data
+sidebar_label: Crypto Address Data
+title: Crypto Address Data
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Cryptos AML
+# Crypto Address Data
 
 `POST`  /check/crypto_address
 
@@ -19,9 +19,9 @@ Set of endpoints to analyze the score of a wallet address and subscribe to monit
 
 
 
-#  Common request body
-Just needs `chain` an `address` and can be used for the following methods:
-- [Address score](#1-address-score)
+## 1. Common request body
+Used for the following endpoints:
+
 - [Address actions](#2-address-actions)
 - [Address counterparty](#3address-counterparty)
 - [Address labels](#4-address-labels)
@@ -50,7 +50,7 @@ api_key = "your-API-Key"
 base_url = "https://api.checklynx.com/v1"
 body = {
   "chain": "ETH",  # Blockchain symbol, e.g. "ETH" or "BTC"
-  "address": "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B"  # Wallet address
+  "address": "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B" 
 }
 headers = {
   "x-api-key": api_key,
@@ -75,7 +75,7 @@ const baseUrl = "https://api.checklynx.com/v1";
 
 const body = {
   chain: "ETH",  // Blockchain symbol, e.g. "ETH" or "BTC"
-  address: "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B"  // Wallet address
+  address: "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B"  
 };
 
 fetch(`${baseUrl}/check/crypto/address/score`, {
@@ -97,95 +97,12 @@ fetch(`${baseUrl}/check/crypto/address/score`, {
 
 
 
-## 1. Address score
-
-`POST` /check/crypto_address/score
-
-Retrieves a normalized AML risk score and detailed risk metadata for a given blockchain address.
-A higher score means greater AML risk; the API also classifies it into four severity bands:
-Low: 0 – 30; 
-Moderate: 31 – 70;
-High: 71 – 90;
-Severe: 91 – 100;
-
-### Response fields
-- **`risk_score`** (Integer):  
-  Normalized AML risk rating from 3 to 100; higher is more risky.
-- **`hacking_event`** (Saddamtring):  
-  Name of any known breach or exploit linked to this address/transaction; empty if none.
-- **`risk_score`** (Integer):  
-  Normalized AML risk rating from 3 to 100; higher is more risky.
-- **`flags`** (Integer):  
-  Human-readable tags summarizing key risk drivers.
-- **`risk_detail`** (Array[Object]):  
-  - **`label`** (String): Risk category name (e.g. `"Scam Token"`, `"Phishing"`).  
-  - **`type`** (String): Classification (`"malicious"`, `"suspected_malicious"`, `"high_risk"`).  
-  - **`volume`** (Float): Amount transacted in this incident.  
-  - **`address`** (String): Counterparty or related address.  
-  - **`percent`** (Float): Fraction of total volume exposed by this incident (e.g. `0.453` = 45.3%).  
-
-
-<details>
-  <summary>Response statusCode: 200</summary>
-  <div>
-    ```js
-    {
-   
-    "risk_score": 3,
-    hacking_event: ""
-    "flags": [
-        "Interact With Malicious Address",
-        "Interact With Suspected Malicious Address",
-        "Interact With High-risk Tag Address"
-    ],
-    "risk_detail": [
-        {
-            "label": "Scam Token",
-            "type": "suspected_malicious",
-            "volume": 3132.761,
-            "address": "0xc41ada125a0469d31be86129324c0f14349d03f2",
-            "percent": 0.0
-        },
-        {
-            "label": "FixedFloat",
-            "type": "high_risk",
-            "volume": 148.719,
-            "address": "0x4e5b2e1dc63f6b91cb6cd759936495434c7e972f",
-            "percent": 0.0
-        },
-        {
-            "label": "Phishing",
-            "type": "suspected_malicious",
-            "volume": 39.697,
-            "address": "0x8aa4e5cdaf7abac39c3c52e52ae58e0739edb405",
-            "percent": 0.0
-        },
-        {
-            "label": "Fake_Phishing198655",
-            "type": "malicious",
-            "volume": 26.465,
-            "address": "0x44969ffb6d3277e47b7646cac94def716cc6840a",
-            "percent": 0.0
-        },
-        {
-            "label": "Fake_Phishing318739",
-            "type": "malicious",
-            "volume": 0.051,
-            "address": "0x106a4821eef5d786fb4253909652910c59bc7765",
-            "percent": 0.0
-        }
-    ]
-}
-
-```
-  </div>
-</details>
-
 
 ## 2. Address actions
 `POST` /check/crypto_address/action
+
 Summarizes the count and share of inbound and outbound transactions by category.
-### Response fields
+#### Response fields
 - **`received_txs`** (Array[Object])  
   List of inbound transaction categories. Each object contains:
   - **`action`** (String): Category name (e.g. “Swap”, “DEX”, “Bridge”).  
@@ -240,7 +157,7 @@ Summarizes the count and share of inbound and outbound transactions by category.
 ## 3. Address counterparty
 `POST` /check/crypto_address/counterparty
 Returns a ranked list of counterparties by total transaction volume for the given address, showing how much value flowed to each and its share of the overall activity.
-### Response fields
+#### Response fields
 - **`Response`** (Array[Object])  
   List of inbound transaction categories. Each object contains:
   - **`name`** (String): Counterparty identifier or label. 
@@ -287,11 +204,12 @@ Returns a ranked list of counterparties by total transaction volume for the give
 
 ## 4. Address labels
 `POST` /check/crypto_address/labels
+
 Fetches human-readable tags and a category for the specified wallet address, 
 helping you identify the entity type (e.g. exchange, service) or on-chain roles (e.g. MEV bot, whale) associated with it.
 
 
-### Response fields
+#### Response fields
 - **`Response`** (Object)  
   List of inbound transaction categories. Each object contains:
   - **`labels`** (Array[String]):  List of tags assigned to the address (e.g. protocol names, ENS domains).  
@@ -316,6 +234,7 @@ helping you identify the entity type (e.g. exchange, service) or on-chain roles 
 
 ## 5. Address overview
 `POST` /check/crypto_address/overview
+
 Returns balance and activity statistics for the specified wallet address, 
 including launch and recent activity timestamps, cumulative received vs. spent amounts, and transaction counts.
 
@@ -364,12 +283,12 @@ including launch and recent activity timestamps, cumulative received vs. spent a
 
 
 
-## 6. Address Profile  
+## 6. Address profile  
 **POST** `/check/crypto_address/profile`  
 
 Returns a high-level snapshot of on-chain roles, malicious incidents, and off-chain relations for a given wallet address.
 
-### Response fields
+#### Response fields
 
 - **`use_platform`** (Object)  
   Breakdown of address activity by platform type:  
