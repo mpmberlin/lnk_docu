@@ -73,7 +73,7 @@ headers = {
   "x-api-key": api_key,
   "Content-Type": "application/json"
 }
-response = requests.post(f"{base_url}/check/crypto/address/score", headers=headers, json=body)
+response = requests.post(f"{base_url}/check/crypto_address/score", headers=headers, json=body)
 if response.status_code == 200:
   print("Success:", response.json())
 else:
@@ -95,7 +95,7 @@ const body = {
   address: "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B"  
 };
 
-fetch(`${baseUrl}/check/crypto/address/score`, {
+fetch(`${baseUrl}/check/crypto_address/score`, {
   method: "POST",
   headers: {
     "x-api-key": apiKey,
@@ -225,7 +225,7 @@ headers = {
   "x-api-key": api_key,
   "Content-Type": "application/json"
 }
-response = requests.post(f"{base_url}/check/crypto/address/score", headers=headers, json=body)
+response = requests.post(f"{base_url}/check/crypto_address/score", headers=headers, json=body)
 if response.status_code == 200:
   print("Success:", response.json())
 else:
@@ -247,7 +247,7 @@ const body = {
   txid: "0xabc123def4567890000000000000000000000000000000000000000000000001"  
 };
 
-fetch(`${baseUrl}/check/crypto/address/score`, {
+fetch(`${baseUrl}/check/crypto_address/score`, {
   method: "POST",
   headers: {
     "x-api-key": apiKey,

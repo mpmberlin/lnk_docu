@@ -35,7 +35,7 @@ Used for the following endpoints:
 ```json
 {
   "chain": "ETH",
-  "address": "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B"
+  "address": "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
 }
 ```
 
@@ -50,13 +50,13 @@ api_key = "your-API-Key"
 base_url = "https://api.checklynx.com/v1"
 body = {
   "chain": "ETH",  # Blockchain symbol, e.g. "ETH" or "BTC"
-  "address": "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B" 
+  "address": "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B" 
 }
 headers = {
   "x-api-key": api_key,
   "Content-Type": "application/json"
 }
-response = requests.post(f"{base_url}/check/crypto/address/score", headers=headers, json=body)
+response = requests.post(f"{base_url}/check/crypto_address/score", headers=headers, json=body)
 if response.status_code == 200:
   print("Success:", response.json())
 else:
@@ -75,10 +75,10 @@ const baseUrl = "https://api.checklynx.com/v1";
 
 const body = {
   chain: "ETH",  // Blockchain symbol, e.g. "ETH" or "BTC"
-  address: "0xAB5801A7D398351B8Be11C439e05c5B3259AEC9B"  
+  address: "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"  
 };
 
-fetch(`${baseUrl}/check/crypto/address/score`, {
+fetch(`${baseUrl}/check/crypto_address/score`, {
   method: "POST",
   headers: {
     "x-api-key": apiKey,
