@@ -335,83 +335,10 @@ Returns a high-level snapshot of on-chain roles, malicious incidents, and off-ch
 </details>
 
 
-## 7. Address investigation  
-**POST** `/check/crypto_address/investigation`  
-
-describe...
-#### Response fields
-
-- **`property`** (Object)  
-  Breakdown of address activity by platform type:  
-  - **`subproperty`**, **`dex`**, **`mixer`**, **`nft`** each contain:  
-    - `subproperty` (Integer): Number of interactions  
-    - `<sub>_list` (Array[String]): Top entities (e.g. exchange names, DEX protocols)
 
 
-<details>
-  <summary>Response statusCode: 200</summary>
-  <div>
-    ```js
-    {
-    "out": [
-        {
-            "address": "0x3945d766185e2264900c84fac10958b3619c2bd4",
-            "tx_hash_list": [
-                "0x7212d9737f9802eaca0e24959a1c69c0c282ebe202c6932b73c3aa8facb4ea36"
-            ],
-            "amount": 5.0,
-            "type": 1,
-            "label": ""
-        }
-    ],
-    "in": [
-        {
-            "address": "0x41ba9b6ee081d9634637489a27831576ad6dbae6",
-            "tx_hash_list": [
-                "0x43aef8b2e1846b8b8745a90d292acb728d6c572bfb79b91b30d8c2552a14771c"
-            ],
-            "amount": 0.0002,
-            "type": 4,
-            "label": ""
-        },
-        {
-            "address": "0xc4a1ac9524bc59110ef5f79916f61324b3c521b6",
-            "tx_hash_list": [
-                "0xc18cf6956fa938d474535b278972d5bb935b7679b8856d77072a60ce3087acf6"
-            ],
-            "amount": 0.0047,
-            "type": 1,
-            "label": ""
-        },
-        {
-            "address": "0x75acc35226f1894508c869884f943a4c3dceac88",
-            "tx_hash_list": [
-                "0x0e98a4625e84138e73aede3a006f2a0585bfe608a739e1ad1be3c6e9b76407ef"
-            ],
-            "amount": 0.0066,
-            "type": 1,
-            "label": ""
-        },
-        {
-            "address": "0x64718abd675e8bd7ca31c61fe353efe58686e9c5",
-            "tx_hash_list": [
-                "0x057d8e6345441d3109c45cb8938e3cf55b92b8e94e46ca7a23619c178ecf2222"
-            ],
-            "amount": 0.0,
-            "type": 1,
-            "label": ""
-        }
-    ],
-    "page": 1,
-    "total_pages": 1,
-    "transactions_on_page": 4
-}
-    ```
-  </div>
-</details>
 
-
-## 2.6 Address Investigation {#address-investigation}
+## 7 Address Investigation {#address-investigation}
 
 **POST** `/check/crypto_address/investigation`  
 Retrieves detailed incoming/outgoing transaction groups with pagination and filtering by timestamp or direction.
@@ -442,11 +369,7 @@ Same Address Body plus optional filters:
   ```
   </TabItem>
 
-  <TabItem value="py" label="Python">
-  ```py
-  # same as dataBodies with additional params
-  ```
-  </TabItem>
+ 
 </Tabs>
 
 ### Response fields  
