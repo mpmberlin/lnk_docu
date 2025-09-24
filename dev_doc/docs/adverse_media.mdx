@@ -1,0 +1,124 @@
+---
+sidebar_position: 4
+description: Discover how to check for Adverse Media
+sidebar_label: Adverse Media
+title: Search
+---
+
+# Adverse Media Screening
+
+`POST` /check/adv_media
+
+Create a search to retrieve whether a target has adverse media records.  
+This endpoint queries open sources and news references that may indicate criminal activity, negative reputation, or other risk factors.
+
+The search is anonymous — the request terms and results are not persisted in our database.
+
+## Request Body for Adverse Media Endpoint
+
+- **`search_term`** (Type: String, required):  
+  The term used to search for individuals, entities, or organizations in adverse media sources.  
+  Example: `"John Doe"`
+
+
+### 1. Search example:
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs groupId="individual">
+
+  <TabItem value="json" label="json">
+```js
+{
+    "search_term": "MARIO HEINSALU",
+}
+
+```
+  </TabItem>
+
+  <TabItem value="py" label="python">
+```py
+import requests
+
+api_key_value = 'your-API-Key'
+base_url='base_url'
+
+body = {
+     "search_term": "MARIO HEINSALU",
+}
+url = f"{base_url}/check/adv_media"
+headers = {
+    "x-api-key": api_key_value,
+    "Content-Type": "application/json"
+}
+response = requests.post(url, headers=headers, json=body)
+if response.status_code == 200:
+    print("Request successful:", response.json())
+else:
+    print("Failed to make request, status code:", response.status_code)
+```
+
+</TabItem>
+
+  <TabItem value="js" label="javascript">
+```js
+const fetch = require('node-fetch');
+const apiKeyValue = 'your-API-Key';
+const baseUrl = 'base_url';
+
+const body = {
+   "search_term": "MARIO HEINSALU",
+};
+
+const url = `${baseUrl}/check/adv_media`;
+const headers = {
+    "x-api-key": apiKeyValue,
+    "Content-Type": "application/json"
+};
+fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(body)
+})
+.then(response => {
+    if (response.ok) {
+        return response.json();
+    } else {
+        throw new Error('Failed to fetch: ' + response.status);
+    }
+})
+.then(data => {
+    console.log("Request successful:", data);
+})
+.catch(error => {
+    console.log("Error in making request:", error.message);
+});
+
+
+```
+
+  </TabItem>
+</Tabs>
+
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+    ```js
+
+{
+    "adverse_media": [
+        {
+            "title": "MARIO HEINSALU - Tagaotsitavad inimesed - Politsei- ja ...",
+            "link": "https://www.politsei.ee/et/tagaotsitavad-inimesed/mario.heinsalu-1996",
+            "details": "Tagaotsitavad inimesed: MARIO HEINSALU. Tagasi. MARIO HEINSALU. Sünniaeg. 10.02.1996. Sugu. mees. Sisestamise aeg. 28.01.2025. Kontaktid.",
+            "category": "General-Adverse-Media"
+        }
+    ],
+    "AI_assessment_adverse_media": "One result indicates person is wanted by police, possible crime involvement."
+}
+  
+```
+  </div>
+</details>

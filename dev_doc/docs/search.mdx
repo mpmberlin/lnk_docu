@@ -11,28 +11,28 @@ title: Search
 
 Create a search to retrieve if a target is in a Sanctions list or is a Politically Exposed Person.
 The target can be an individual or a company.
-This is an anonymous search and the terms of the search as well as the results will not be persisted in our data base.
+This is an anonymous search and the terms of the search as well as the results will not be persisted in our database.
 
 
 ## Request Body for Search Endpoint
 
-The request body for the search endpoint consists of two main components: the search fields and optional the filters`.
+The request body for the search endpoint consists of two main components: the search fields and optional filters.
 
 ### Search fields
 - **`search_term`** (Type: String, mandatory if no `search_identity` is provided):  
-  The term used to search for names, alias, company names or vessel names.
+  The term used to search for names, aliases, company names or vessel names.
   Example: "Joe Doe"
 
 - **`search_identity`** (Type: String, mandatory if no `search_term` is provided):  
   The specific identity to search for, such as a tax ID or similar identifier.  
   Example: "taxid123"
 
-- **`search_logic`** (Type: `String, optional`):  
-  Defines the logical operation to combine search fields. Options include `"OR"` or `"AND"`.  
-  Example: `"OR"`
+- **`fuzziness`** (Type: String, optional): "0" strict, "1" default, "2" broad.
 
 
-Used to query against specific datasets such as sanctions lists and Politically Exposed Persons (PEP). It searches through target names and their aliases or other associated names.
+
+
+Used to query against specific datasets such as sanctions lists and Politically Exposed Persons (PEP). It searches through target names, their aliaseses, and other associated members such relatives.
 
 **Requirements:**
 
@@ -46,6 +46,8 @@ Check [Fuzzy Logic and Scoring ](intro#Fuzzy-Logic-and-Scoring)
 ### Filter parameters
 Filters allow for refining search queries by targeting specific criteria. Below are the available filters:
 
+
+
 **`group_type`**  
 Type: Array of strings, optional.  
 Determines the nature of the target, such as "individual" for private persons, "entity" for organizations and companies, 
@@ -56,7 +58,7 @@ Example: `["individual"]`, `["entity"]`, `["vessel"]`, `["aircraft"]`
 **`nationality `** 
 Type: Array of strings, optional.  
 Must conform to ISO 3166-1 alpha-2 codes. This filter excludes nationalities for individuals or jurisdictions for entities that do not match the specified codes. Targets with unknown nationality or jurisdiction will not be filtered out.
-Example: `["US", "UK"]`
+Example: `["US", "GB"]`
 
 **`source_type`**  
 Type: Array of strings, optional.  
@@ -73,7 +75,15 @@ Type: Array of strings, optional.
 Accepts a year in the format "YYYY". This filter excludes targets whose birth year does not match the specified year(s). Targets with an unknown birth year will not be filtered out.
 Example: `["1984"]`, `["1984", "1985"]`, or `[]`
 
+**`exclude_sanction_source_id`**  
+Type: Array of strings, optional.  
+Excludes results from specific sanction sources. Cannot be used together with `include_only_sanction_source_id`.  
+Example: `["AUCL"]`
 
+**`include_only_sanction_source_id`**  
+Type: Array of strings, optional.  
+Restricts results to only the specified sanction sources. Cannot be used together with `exclude_sanction_source_id`.  
+Example: `["AUCL"]`
 
 
 
@@ -95,14 +105,19 @@ Setting **`group_type`** to `["entity"]` and **`source_type`** to `["pep"]` will
 
 
 ## Search response
-As seen in the examples above, a successful Search Response returns an array with results objects. 
-Below are the properties included in each result object: 
+A successful Search Response returns an object with two fields: results (array) and match_profiles (array).
+
+- **`results`**: an array of result objects, each representing a matched target.  
+- **`match_profiles`**: an array of profile objects that group related results into clusters.
+
+### Results
+Fields:
 1) `id`:
 Type: String. Unique identifier for the search result given by Checklynx. E.g.: 'BISP-e91d49bc'  
 Required: Yes.  
 
 2) `score`:
-Type: number (float). Represents the relevance of the search result, where higher scores indicate greater relevance. Scores range between 0.0 and 5.0.
+Type: number (string). Represents the relevance of the search result, where higher scores indicate greater relevance. Scores range between 0.0 and 5.0.
 E.g.: 2.0  
 Required: Yes
 
@@ -119,13 +134,31 @@ Required: Yes
 5) `case`: 
 Type: Array of Object.
 Legal and administrative context surrounding the listing of the target.
-Checklynx unifies different cases for the same target and source. This it the reason why it can be shown as a list.
+Checklynx unifies different cases for the same target and source. This is the reason why it can be shown as a list.
 [See the content](search#case)
 
-5) `match_profile_id`: 
-Type: String.
-Checklynx uses AI to group matches from various sources that refer to the same target into clusters. Each unique match_profile_id identifies a cluster representing one target. For example, all entries with match_profile_id="0" are associated with the same target.
+### Match profiles
+Each match profile object describes a cluster of results that refer to the same real-world target.  
 
+Fields:
+
+- **`match_profile_id`**  
+Type: String. Unique identifier for the cluster.  
+Example: `"0"`
+
+- **`match_score`**  
+Type: String. Similarity score of the cluster.  
+Example: `"81"`
+
+- **`name`**  
+Type: String. Canonical or representative name for the cluster.  
+Example: `"Mohammed Al Ghabra"`
+
+- **`results_ids`**  
+Type: Array of strings. IDs of the results that belong to this cluster.  
+Example: `["873927ef29", "43edc2245e"]`
+
+To know which results are clustered together, check whether a result’s `id` appears in a `match_profile`’s `results_ids`.
 
 
 
@@ -136,7 +169,7 @@ The target object can contain:
 **`address`**  
 Type: Array of objects.  
 Last known address of the target.
-Each addresss object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
+Each address object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
 Notice that address is used for the street information or general address when the source is not specific.  
 
 **`associates`**  
@@ -157,7 +190,7 @@ Format 'YYYY-MM-DD'. E.g.: ['1961-03-09']
 **`birth_place`**  
 Type: Array of objects.  
 The location where the target was born.
-Each addresss object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
+Each address object contains one of the known address including string fields such `address`, `city`, `province` `country` (ISO 3166-1 alpha-2). 
 Notice that address is used for the street information or general address when the source is not specific.  
 
 **`birth_year`**  
@@ -167,7 +200,7 @@ It can happen that the exact birth year is unknown and therefore more than one i
 Format 'YYYY'. E.g.: ['1961']
 
 **`contact_information`**  
-Type: Array of objects.  
+Type: object. 
 Fields:   
 - `email`: Type: Array of strings. E.g.: ["info@example.com"]
 - `telephone`: Type: Array of strings. E.g.: ["+1234567890"]
@@ -206,6 +239,21 @@ When true, it indicates that the target is deceased.
 Type: String.  
 The full name of the target.  
 
+
+
+**`first_name`**  
+Type: String.  
+Name parts (when provided by the source).
+
+**`second_name`**  
+Type: String.  
+Name parts (when provided by the source).
+
+**`third_name`**  
+Type: String.  
+Name parts (when provided by the source).
+
+
 **`nationality`**  
 Type: Array of strings  
 Description: Nationality of the target, represented by ISO 3166-1 alpha-2 country codes.
@@ -219,6 +267,14 @@ Description: The profession or job held by the target. E.g.: ['politician']
 Type: Array of strings.  
 Any aliases or other names used by the target.
 
+**`photo_url`**  
+Type: String.  
+URL to a representative photo.
+
+
+**`pep_active`**  
+Type: boolean.  
+Whether the person currently holds a PEP role (PEP data).
 
 **`remarks`**  
 Type: Array of strings.  
@@ -239,7 +295,8 @@ The source object can contain the following fields of string type:
 - `name`: Type: String. Official name of the organization which has listed the target.
 - `region`: Type: String. Country or region of the source.
 - `listing_id`: Type: String. Unique identifier given by the source to that target.
-- `source_type`: Type: String. type of source which can be "pep" or "sanctions"
+- `source_type`: Type: String. type of source which can be "pep" or "sanctions".
+- `id`: Type: String. Internal identifier given by checklnyx for that source (e.g., "BISPL", "OFACSDN").
 
 ### Case
 Each case object can contain:
@@ -248,10 +305,10 @@ Each case object can contain:
 - `basis`: Type: String. The legal foundation for the target's listing. E.g.: "Designated under the autonomous sanctions regulations 2011 on 2 march 2012. ..."
 - `designation_date`: Type: String. The date on which the target was officially designated under the specified sanctions. E.g.: "2023-09-01"
 - `since`: Type: String. The date when the listing was initially established. E.g.: "2023-09-01"
-- `updated_on`: Type: Array of strings. Type: Array of strings. The most recent dates on which the listing was updated.E.g.: ["2023-09-01"]
+- `updated_on`: Type: Array of strings. The most recent dates on which the listing case was updated by the source. E.g.: ["2023-09-01"]
 - `to`: Type: String. The expiry date of the listing, indicating until when it is valid. E.g.: "2029-09-01"
 - `url`: Type: String. A URL to the official online listing or documentation related to the case.
-- `other_ids`: Type: Array of strings. Other identifiers for this target listing in other oficial sources.
+- `other_ids`: Type: Array of strings. Other identifiers for this target listing in other official sources.
 
 
 
@@ -271,6 +328,7 @@ import TabItem from '@theme/TabItem';
 ```js
 {
     "search_term": "Al-Tikriti",
+    "fuzziness":"1",
     "filters": {
         "source_type": ["sanctions"],
         "nationality": ["IQ", "SY"],
@@ -292,6 +350,7 @@ base_url='base_url'
 
 body = {
     "search_term": "Al-Tikriti",  # List of search terms, must be 3+ characters each
+    "fuzziness":"1",
     "filters": {
         "source_type": ["sanctions"],  # Optional, can be "sanctions" or "pep"
         "nationality": ["IQ", "SY"],  # Optional ISO 3166-1 alpha-2 country codes
@@ -322,6 +381,7 @@ const baseUrl = 'base_url';
 
 const body = {
     "search_term": "Al-Tikriti",
+    "fuzziness":"1",
     "filters": {
         "source_type": ["sanctions"],
         "nationality": ["IQ", "SY"],
@@ -367,73 +427,76 @@ fetch(url, {
   <summary>Response statusCode: 200</summary>
   <div>
     ```js
-[
+{
+  
+  "results": [
     {
-        "id": "BISPL-c948e3c1d",
-        "score": 2.3,
-        "target": {
-            "group_type": "individual",
-            "name": "Al-Tikriti, Barzan Ibrahim Hassan",
-            "nationality": ["IQ"],
-            "birth_year": ["1951"],
-            "birth_date": ["1951-02-17"],
-            "address": [{"address": "Geneva, CH"}],
-            "associates": [{
-                "type": "first degree family", 
-                "value": "Saddam Hussein al-Tikriti", 
-                "details": "brother of"}],
-            "birth_place": [{
-                "place": "Tikrit, Iraq", "country": "IQ"}],
-            "other_names": ["Al-Takriti, Barzan Ibrahim Hassan", "Al-Tikriti, Barzan Ibrahim Hasan"]
-        },
-        "source": {
-            "listing_id": "7880",
-            "region": "USA",
-            "name": "Bureau of Industry and Security",
-            "id": "BISPL",
-            "source_type": "sanctions"
-        },
-        "case": [{
-            "basis": "Specially Designated Nationals (SDN) - Treasury Department",
-            "program": "IRAQ2",
-            "url": "https://home.treasury.gov/policy-issues/financial-sanctions/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists"
-        }],
-        "match_profile_id": "0"
-    },
-    {
-        "id": "MEFSIN-10f126371",
-        "score": 2.3,
-        "target": {
-            "group_type": "individual",
-            "name": "Hussein Al-Tikriti",
-            "birth_place": [{"place": "Bagdad"}],
-            "remarks": ["Fils cadet de Saddam Hussein. Supervisait la Garde républicaine spéciale, l'Organisation spéciale de sécurité et la Garde républicaine"],
-            "first_name": "Saddam Qusay",
-            "other_names": ["Qoussaï Saddam Hussein Al-Tikriti"]
-        },
-        "source": {
-            "listing_id": "2338",
-            "region": "France",
-            "name": "Ministère de L'Économie, des Finances et de la Souveraineté.",
-            "id": "MEFSIN",
-            "source_type": "sanctions"
-        },
-        "case": [{
-            "other_ids": ["EU.39.56"],
-            "basis": "(CE) 1210/2003 du 07/07/2003 (ONU Irak - RCSNU 1518 (2003) et R (CE) 1210/2003)"
-        }],
-        "match_profile_id": "0"
-    },
-    {
-        "id": "MEFSIN-202fb3711",
-        "score": 2.2,
-        "target": {
-            "group_type": "individual",
-            "name": "Hussein al-tikriti",
-            // Additional target data here...
+      "id": "c82a9d621b",
+      "target": {
+        "name": "Barzan Ibrahim Hassan Al-Tikriti",
+        "first_name": "Barzan Ibrahim Hassan",
+        "second_name": "Al-Tikriti",
+        "nationality": ["IQ"],
+        "birth_year": ["1951"],
+        "birth_date": ["1951-02-17"],
+        "other_names": ["Al Takriti Barzan Ibrahim Hassan"],
+        "associates": [
+          { "type": "first degree family", "value": "Saddam Hussein al Tikriti", "details": "brother of" }
+        ]
+      },
+      "source": {
+        "id": "BISPL",
+        "name": "Bureau of Industry and Security",
+        "region": "USA",
+        "listing_id": "7880",
+        "source_type": "sanctions"
+      },
+      "score": "4.85",
+      "case": [
+        {
+          "program": "Iraq2",
+          "basis": "Specially designated nationals (sdn) - treasury department",
+          "url": "https://home.treasury.gov/policy-issues/financial-sanctions/..."
         }
+      ]
+    },
+    {
+      "id": "b86c1041ba",
+      "target": {
+        "name": "Hamid Raja Shalah Al-Tikriti",
+        "nationality": ["IQ"],
+        "other_names": ["Hamid Raja Shalah Hassum Al Tikriti", "Hassan Al Tikriti"],
+        "group_type": "individual"
+      },
+      "source": {
+        "id": "SAFIC",
+        "name": "Financial Intelligence Centre",
+        "region": "South Africa",
+        "listing_id": "IQi.017",
+        "source_type": "sanctions"
+      },
+      "score": "3.67",
+      "case": [{ "since": "2003-06-27" }]
     }
-]
+  ],
+  "match_profiles": [
+    {
+      "match_profile_id": "0",
+      "match_score": "51",
+      "name": "Barzan Ibrahim Hassan Al-Tikriti",
+      "results_ids": ["c82a9d621b"]
+    },
+    {
+      "match_profile_id": "1",
+      "match_score": "50",
+      "name": "Hamid Raja Shalah Al-Tikriti",
+      "results_ids": ["b86c1041ba"]
+    }
+  ]
+}
+
+
+
 ```
   </div>
 </details>
@@ -449,7 +512,7 @@ fetch(url, {
   <TabItem value="json" label="json">
 ```js
 {
-    "search_term": "Al-Tikriti",
+    "search_term": "Trading & Construction",
     "filters": {
         "source_type": ["sanctions"],
         "nationality": ["SG"],
@@ -532,65 +595,83 @@ fetch(url, {
   <summary>Response statusCode: 200</summary>
   <div>
     ```js
-[
+
+
+{
+  "results": [
     {
-        "id": "OFAC1-1a544950a",
-        "score": 3.0,
-        "target": {
-            "group_type": "entity",
-            "name": "Asia trading & construction pte ltd",
-            "nationality": ["SG"],
-            "identification": [{
-                  "id": "201401923D",
-                  "type": "registration number",
-                  "details": "Registration Number"
-                }
-            ],
-            "address": [{
-                  "address": "20 Peck Seah Street #02-00",
-                  "city": "Singapore",
-                  "country": "SG",
-                  "zip_code": "79312"
-                }
-            ],
-            "remarks": ["(Linked To: STATE CORPORATION ROSTEC)"],
-            "second_name": "Asia trading & construction pte ltd",
-            "other_names": [
-                "ASIA TRADING AND CONSTRUCTION PTE LTD",
-                "FIVE STAR RESORT PTE LTD"
-            ]
-        },
-        "source": {
-            "listing_id": "40497",
-            "region": "USA",
-            "name": "Office of foreign assets control. specially designated nationals list",
-            "source_type": "sanctions"
-        },
-        "case": [{ "program": "Russia-eo14024" } ],
-        "match_profile_id": "0"
+      "id": "b95c5dd25d",
+      "target": {
+        "name": "Asia Trading & Construction Pte Ltd",
+        "nationality": ["SG"],
+        "other_names": [
+          "Five Star Resort Pte Ltd",
+          "Asia Trading And Construction Pte Ltd"
+        ],
+        "group_type": "entity",
+        "identification": [
+          { "id": "201401923D", "type": "registration number" }
+        ]
+      },
+      "source": {
+        "id": "BISPL",
+        "name": "Bureau of Industry and Security",
+        "region": "USA",
+        "listing_id": "40497",
+        "source_type": "sanctions"
+      },
+      "score": "3.57",
+      "case": [
+        { "program": "Russia-eo14024" }
+      ]
     },
     {
-        "id": "BISPL-b57b1d9aa",
-        "score": 3.0,
-        "target": {
-            "group_type": "entity",
-            "name": "Asia trading & construction pte ltd",
-            "identification": [{
-                  "id": "201401923D,",
-                  "type": "registration number",
-                  "details": "registration number"
-                }]
-          }
+      "id": "0b1baecb41",
+      "target": {
+        "name": "Newstech Vietnam Trading And Investment Construction JSC",
+        "other_names": [
+          "Hikma Construction And General Trading Company",
+          "Latifi Construction And Road Construction Company"
+        ],
+        "group_type": "entity"
+      },
+      "source": {
+        "id": "EBRD",
+        "name": "European Bank for Reconstruction and Development",
+        "region": "EU",
+        "source_type": "sanctions"
+      },
+      "score": "2.09",
+      "case": [
+        { "sanction_type": "06-04-2021" }
+      ]
     }
-    // Additional target data here...
-]
+  ],
+  "match_profiles": [
+    {
+      "match_profile_id": "0",
+      "match_score": "56",
+      "name": "Asia Trading & Construction Pte Ltd",
+      "results_ids": ["b95c5dd25d"]
+    },
+    {
+      "match_profile_id": "1",
+      "match_score": "30",
+      "name": "Hikma Construction And General Trading Company",
+      "results_ids": ["0b1baecb41"]
+    }
+  ]
+}
+
+
+
 ```
   </div>
 </details>
 
 
 
-### 3 Search example: Individual in Politically Exposed Peeople
+### 3 Search example: Individual in Politically Exposed People
 
 
 <Tabs groupId="pep">
@@ -689,71 +770,73 @@ fetch(url, {
   <summary>Response statusCode: 200</summary>
   <div>
     ```js
-[
+
+
+{
+  "results": [
     {
-        "id": "pep-46b45ebe2",
-        "score": 5.0,
-        "target": {
-            "name": "Barack Obama",
-            "nationality": [
-                "US",
-                "KE"
-            ],
-            "birth_year": [
-                "1961"
-            ],
-            "gender": "male",
-            "birth_date": [
-                "1961-08-04"
-            ],
-            "associates": [
-                {
-                    "type": "first degree family",
-                    "value": "Barack Obama Sr.",
-                    "details": "father of"
-                },
-                {
-                    "type": "first degree family",
-                    "value": "Stanley Ann Dunham",
-                    "details": "mother of"
-                },
-                // Additional target data here...
-                
-                {
-                    "type": "relatives",
-                    "value": "Lolo Soetoro",
-                    "details": "relative of"
-                }
-            ],
-            "birth_place": [
-                {
-                    "place": "Kapiolani Medical Center for Women and Children",
-                    "country": "US"
-                }
-            ],
-            "function": [
-                "2009-01-20 to 2017-01-20. President of the united states",
-                "2008-11-04 to 2009-01-20. President-elect of the united states",
-                "2007-01-03 to 2008-11-16. United states senator",
-                "2005-01-03 to 2007-01-03. United states senator",
-                "1997-01-08 to 2004-11-04. Member of the state senate of illinois"
-            ],
-            "title": [
-                "President of the united states from 2009 to 2017"
-            ],
-            "occupation": [
-                "['lawyer', 'politician', 'jurist', 'statesperson', 'academic', 'memoirist', 'podcaster', 'political writer', 'community organizer', 'international forum participant']"
-            ],
-            "group_type": "individual"
-        },
-        "source": {
-            "name": "Politically Exposed People",
-            "region": "Worlwide",
-            "source_id": "pep",
-            "source_type": "pep"
-        }
+      "id": "e8eb9ca0f8",
+      "target": {
+        "name": "Hussein Obama",
+        "photo_url": "http://commons.wikimedia.org/wiki/Special:FilePath/President Barack Obama.jpg",
+        "nationality": ["KE", "US"],
+        "other_names": ["Barack Hussein Obama", "President Obama"],
+        "birth_year": ["1961"],
+        "birth_date": ["1961-08-04"],
+        "birth_place": [{ "country": "US", "city": "Kapiolani Medical Center for Women and Children" }],
+        "gender": "male",
+        "associates": [
+          { "type": "first degree family", "value": "Michelle Obama", "details": "spouse of" },
+          { "type": "first degree family", "value": "Stanley Ann Dunham", "details": "mother of" }
+        ],
+        "contact_information": { "website": ["https://barackobama.com"] },
+        "function": ["2009-01-20 to 2017-01-20. President of the United States"],
+        "title": ["President of the United States from 2009 to 2017"],
+        "occupation": ["President of the United States"],
+        "group_type": "individual"
+      },
+      "score": "5",
+      "source": {
+        "name": "Politically Exposed People",
+        "region": "Worldwide",
+        "listing_id": "",
+        "source_type": "pep"
+      }
     },
+    {
+      "id": "1852665aef",
+      "target": {
+        "name": "Barack Obama",
+        "photo_url": "https://bioguide.congress.gov/photo/eeb82caa23fb51b87f1e609b05a78144.jpg",
+        "nationality": ["US"],
+        "other_names": ["Obama Barack"],
+        "pep_active": true,
+        "function": ["Member of the 118 Congress"],
+        "occupation": ["Politician"],
+        "group_type": "individual",
+        "contact_information": null
+      },
+      "score": "4.7",
+      "source": {
+        "name": "Politically Exposed People",
+        "region": "Worldwide",
+        "listing_id": "",
+        "source_type": "pep"
+      }
+    }
+  ],
+  "match_profiles": [
+    {
+      "match_profile_id": "0",
+      "match_score": "96",
+      "name": "Barack Obama",
+      "results_ids": ["e8eb9ca0f8", "1852665aef"]
+    }
   ]
+}
+
+
+
 ```
   </div>
 </details>
@@ -851,81 +934,98 @@ fetch(url, {
   <summary>Response statusCode: 200</summary>
   <div>
     ```js
-[
-   
-    {
-        "id": "4214dcb5d1",
-        "target": {
-            "name": "Artin",
-            "group_type": "vessel",
-            "identification": [
+
+{
+    "results": [
+        {
+            "id": "3ebc0d6290",
+            "target": {
+                "name": "Artin",
+                "nationality": [
+                    "IR"
+                ],
+                "group_type": "vessel",
+                "identification": [
+                    {
+                        "id": "IMO 9305221",
+                        "type": "registration number",
+                        "details": "Vessel Registration Identification"
+                    }
+                ],
+                "remarks": [
+                    "(Linked To: ISLAMIC REPUBLIC OF IRAN SHIPPING LINES)"
+                ],
+                "contact_information": null
+            },
+            "source": {
+                "listing_id": "25297",
+                "region": "USA",
+                "name": "Office of Foreign Assets Control. Specially Designated Nationals (SDN) List",
+                "id": "OFACSDN",
+                "source_type": "sanctions"
+            },
+            "score": "2.64",
+            "case": [
                 {
-                    "id": "9305221",
-                    "type": "registration number",
-                    "details": "registration id"
-                }
-            ]
-        },
-        "source": {
-            "listing_id": "25297",
-            "region": "USA",
-            "name": "Bureau of Industry and Security",
-            "id": "BISPL",
-            "source_type": "sanctions"
-        },
-        "score": "2.66",
-        "case": [
-            {
-                "basis": "Specially designated nationals (sdn) - treasury department",
-                "program": "Iran; npwmd; ifsr",
-                "url": "https://home.treasury.gov/policy-issues/financial-sanctions/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists"
-            }
-        ],
-        "match_profile_id": "0",
-        "vessel": {
-            "IMO": "9305221"
-        }
-    },
-    {
-        "id": "e1e63dd4e1",
-        "target": {
-            "name": "Artin",
-            "nationality": [
-                "IR"
-            ],
-            "group_type": "vessel",
-            "identification": [
-                {
-                    "id": "IMO 9305221",
-                    "type": "registration number",
-                    "details": "Vessel Registration Identification"
+                    "program": "Ifsr, iran, npwmd"
                 }
             ],
-            "remarks": [
-                "(Linked To: ISLAMIC REPUBLIC OF IRAN SHIPPING LINES)"
-            ]
-        },
-        "source": {
-            "listing_id": "25297",
-            "region": "USA",
-            "name": "Office of Foreign Assets Control. Specially Designated Nationals (SDN) List",
-            "id": "OFAC",
-            "source_type": "sanctions"
-        },
-        "score": "2.4",
-        "case": [
-            {
-                "program": "Ifsr, iran, npwmd"
+            "vessel": {
+                "type": "Bulk Carrier",
+                "flag": "Iran",
+                "IMO": "9305221"
             }
-        ],
-        "match_profile_id": "0"
-        "vessel": {
-            "type": "Bulk Carrier",
-            "flag": "Iran",
-            "IMO": "9305221"
+        },
+        {
+            "id": "ac4ff86b5f",
+            "target": {
+                "name": "Artin",
+                "nationality": [
+                    "IR"
+                ],
+                "group_type": "vessel",
+                "identification": [
+                    {
+                        "id": "9305221",
+                        "type": "registration number",
+                        "details": "registration id"
+                    }
+                ],
+                "contact_information": null
+            },
+            "source": {
+                "listing_id": "25297",
+                "region": "USA",
+                "name": "Bureau of Industry and Security",
+                "id": "BISPL",
+                "source_type": "sanctions"
+            },
+            "score": "2.22",
+            "case": [
+                {
+                    "basis": "Specially designated nationals (sdn) - treasury department",
+                    "program": "Iran; npwmd; ifsr",
+                    "url": "https://home.treasury.gov/policy-issues/financial-sanctions/specially-designated-nationals-and-blocked-persons-list-sdn-human-readable-lists"
+                }
+            ],
+            "vessel": {
+                "type": "Bulk Carrier",
+                "flag": "Iran"
+            }
         }
-    }
-]
+    ],
+    "match_profiles": [
+        {
+            "match_score": "100",
+            "match_profile_id": "0",
+            "name": "Artin",
+            "results_ids": [
+                "ac4ff86b5f",
+                "3ebc0d6290"
+            ]
+        }
+    ]
+}
   
 ```
   </div>
