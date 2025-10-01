@@ -9,16 +9,38 @@ sidebar_position: 1
 Welcome to our Developer Documentation! This API facilitates the seamless integration of your systems and automates searches within our database. We provide a REST-based API architecture, and authentication is managed using an API key.
 
 
-
 ## Responses & errors
 
 For successful requests:
 
-The API returns a 200 HTTP status code, indicating that the request was processed successfully.
-The response body is in JSON format and contains detailed information about the request. 
+- The API returns **200 OK**, with the response body in JSON format containing the requested data.
 
-Unsuccessful requests will have a non-200 HTTP status code and will contain "code" and optionally a "message" with a detailed description of the error.
-Example of a code could be '400-BAD-REQUEST'.
+For unsuccessful requests:
+
+- The API returns a **non-200 HTTP status code**.
+- The response body is always JSON and includes:
+  - `code` (string): a stable machine-readable error code  
+  - `message` (string): a human-readable explanation of the error  
+
+### Common error codes
+
+| HTTP status | Code example                       | Meaning                                                                 |
+|-------------|------------------------------------|-------------------------------------------------------------------------|
+| 400         | `400-SEARCH-BAD-REQUEST`           | Invalid request, e.g. Missing search term or identity       |
+| 401         | `401-UNAUTHORIZED`                 | Missing or invalid credentials                                          |
+| 401         | `401-EXPIRED_TOKEN`                | Token is expired                                                        |
+| 429         | `429-THROTTLED`                    | Too many requests; respect the `Retry-After` header before retrying     |
+| 500         | `500-INTERNAL-ERROR`               | Unexpected server error                                                 |
+
+
+```js
+{
+   "code": "400-SEARCH-BAD-REQUEST",
+  "message": "Missing search term or identity"
+}
+
+```
+
 
 ## Fuzzy Logic and Scoring
 
