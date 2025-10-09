@@ -26,17 +26,17 @@ For unsuccessful requests:
 
 | HTTP status | Code example                       | Meaning                                                                 |
 |-------------|------------------------------------|-------------------------------------------------------------------------|
-| 400         | `400-SEARCH-BAD-REQUEST`           | Invalid request, e.g. Missing search term or identity       |
-| 401         | `401-UNAUTHORIZED`                 | Missing or invalid credentials                                          |
-| 401         | `401-EXPIRED_TOKEN`                | Token is expired                                                        |
-| 429         | `429-THROTTLED`                    | Too many requests; respect the `Retry-After` header before retrying     |
-| 500         | `500-INTERNAL-ERROR`               | Unexpected server error                                                 |
+| 400         | `400_BAD_REQUEST_BODY`             | Instance value (\"x\") not found in enum                                |
+| 400         | `400_INVALID_API_KEY`              | Missing, malformed, expired, or not recognized                          |
+| 401         | `401_MISSING_AUTHENTICATION_TOKEN` | Often is wrong endpoint path                                            |
+| 429         | `429_THROTTLED`                    | Too many requests wait some seconds and retry                           |
+| 500         | `500_INTERNAL-ERROR`               | Unexpected server error                                                 |
 
 
 ```js
 {
-   "code": "400-SEARCH-BAD-REQUEST",
-  "message": "Missing search term or identity"
+  "code": "400_BAD_REQUEST_BODY",
+   "message": "Invalid request body [instance value (\"sanctins\") not found in enum (possible values: [\"pep\",\"sanctions\"])]"
 }
 
 ```
