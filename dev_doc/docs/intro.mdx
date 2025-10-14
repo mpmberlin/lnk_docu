@@ -29,6 +29,7 @@ For unsuccessful requests:
 | 400         | `400_BAD_REQUEST_BODY`             | Instance value (\"x\") not found in enum                                |
 | 400         | `400_INVALID_API_KEY`              | Missing, malformed, expired, or not recognized                          |
 | 401         | `401_MISSING_AUTHENTICATION_TOKEN` | Often is wrong endpoint path                                            |
+| 403         | `403_SUBSCRIPTION_INACTIVE`        | Subscription expired                                                    |
 | 429         | `429_THROTTLED`                    | Too many requests wait some seconds and retry                           |
 | 500         | `500_INTERNAL-ERROR`               | Unexpected server error                                                 |
 
