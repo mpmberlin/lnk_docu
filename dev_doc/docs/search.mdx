@@ -44,46 +44,21 @@ Check [Fuzzy Logic and Scoring ](intro#Fuzzy-Logic-and-Scoring)
 :::
 
 ### Filter parameters
-Filters allow for refining search queries by targeting specific criteria. Below are the available filters:
 
+Filters allow refining search queries by targeting specific criteria.  
+The following table lists all available filters for the `/check/sanctions_pep` endpoint.
 
+| Filter | Type | Required | Description | Example |
+|--------|------|-----------|--------------|----------|
+| `group_type` | array[string] | optional | Determines the nature of the target — `"individual"` for persons, `"entity"` for organizations, `"vessel"` for ships, or `"aircraft"` for planes. Targets with unknown type are not filtered. | `["individual"]` |
+| `nationality` | array[string] | optional | Must conform to ISO 3166-1 alpha-2 codes. Filters out nationalities or jurisdictions not matching the specified codes. | `["US", "GB"]` |
+| `source_type` | array[string] | optional | Specifies databases to search: `"pep"` (Politically Exposed Persons), `"sanctions"`, or both. Empty defaults to all. | `["sanctions"]` |
+| `gender` | array[string] | optional | Filters by gender. `"male"` excludes females and vice versa. Unknown gender is not filtered. | `["male"]` |
+| `birth_year` | array[string] | optional | Year(s) of birth in `YYYY` format. Unknown birth years are not filtered. | `["1984"]` |
+| `exclude_deceased` | boolean | optional | When `true`, excludes deceased individuals from results. Defaults to `true`. | `true` |
+| `exclude_sanction_source_id` | array[string] | optional | Excludes results from specific sanction sources. Cannot be used with `include_only_sanction_source_id`. | `["AUCL"]` |
+| `include_only_sanction_source_id` | array[string] | optional | Restricts results only to the specified sanction sources. Cannot be used with `exclude_sanction_source_id`. | `["AUCL"]` |
 
-**`group_type`**  
-Type: Array of strings, optional.  
-Determines the nature of the target, such as "individual" for private persons, "entity" for organizations and companies, 
-"vessel" for ships, or "aircraft" for planes. Specifying "individual" will filter out all targets identified as entities, vessels,
- and aircraft, and vice versa. Targets with an unknown group type will not be filtered out.
-Example: `["individual"]`, `["entity"]`, `["vessel"]`, `["aircraft"]`
-
-**`nationality `** 
-Type: Array of strings, optional.  
-Must conform to ISO 3166-1 alpha-2 codes. This filter excludes nationalities for individuals or jurisdictions for entities that do not match the specified codes. Targets with unknown nationality or jurisdiction will not be filtered out.
-Example: `["US", "GB"]`
-
-**`source_type`**  
-Type: Array of strings, optional.  
-Specifies which databases to search through, options include "pep" for Politically Exposed Persons, "sanctions" for sanctions lists, or both. Leaving the array empty defaults to searching all databases.
-Example: `["pep"]`, `["sanctions"]`, or `[]`
-
-**`gender`**  
-Type: Array of strings, optional.  
-Filters targets based on gender. Specifying "male" will exclude all targets where the gender is female and vice versa. Targets with an unknown gender will not be filtered out.
-Example: `["male"]`, `["female"]`, or `[]`
-
-**`birth_year`**   
-Type: Array of strings, optional.  
-Accepts a year in the format "YYYY". This filter excludes targets whose birth year does not match the specified year(s). Targets with an unknown birth year will not be filtered out.
-Example: `["1984"]`, `["1984", "1985"]`, or `[]`
-
-**`exclude_sanction_source_id`**  
-Type: Array of strings, optional.  
-Excludes results from specific sanction sources. Cannot be used together with `include_only_sanction_source_id`.  
-Example: `["AUCL"]`
-
-**`include_only_sanction_source_id`**  
-Type: Array of strings, optional.  
-Restricts results to only the specified sanction sources. Cannot be used together with `exclude_sanction_source_id`.  
-Example: `["AUCL"]`
 
 
 
