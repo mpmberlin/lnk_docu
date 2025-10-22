@@ -1,0 +1,261 @@
+---
+sidebar_position: 4
+description: Perform multiple AML screenings in one request
+sidebar_label: AML Batch Screening
+title: Search Batch
+
+---
+
+# AML Batch Screening
+
+`POST` /check/sanctions_pep/batch
+
+Perform multiple AML checks in a single request.  
+Each item in `check_items` represents one individual or entity to screen.  
+This endpoint is designed for bulk screening and mirrors the single-search logic described in [Search](/docs/search).
+
+:::tip
+All filters and field behaviors (such as `fuzziness`, `exclude_deceased`, and `source_type`) are identical to the single-search endpoint.  
+Only the request and response structures differ.
+:::
+
+
+
+---
+
+## Request Body
+
+The batch request includes global parameters (applied to all items) and a list of per-item searches under `check_items`.
+
+### Structure
+
+| Field | Type | Required | Description |
+|--------|------|-----------|-------------|
+| `fuzziness` | string | optional | Same meaning as in single search. `"0"`, `"1"`, `"2"`. Default `"1"`. |
+| `source_type` | array[string] | optional | Search scope. Accepts `"sanctions"` and/or `"pep"`. |
+| `exclude_deceased` | boolean | optional | Excludes deceased individuals. Default `true`. |
+| `exclude_sanction_source_id` | array[string] | optional | Excludes results from specific sources. Cannot be used with `include_only_sanction_source_id`. |
+| `include_only_sanction_source_id` | array[string] | optional | Restricts results to specific sources. Cannot be used with `exclude_sanction_source_id`. |
+| `check_items` | array[object] | **required** | Each entry defines one search target. |
+
+### Each `check_item` contains
+
+| Field | Type | Required | Description |
+|--------|------|-----------|-------------|
+| `customer_id` | string | **required** | Unique identifier for correlating results. |
+| `search_term` | string | conditional | Name or alias to search. Required if no `search_identity`. |
+| `search_identity` | string | conditional | Identifier such as tax ID, passport, or wallet address. Required if no `search_term`. |
+| `filters` | object | optional | Same structure and meaning as single-search filters (`gender`, `group_type`, `nationality`, etc.). |
+
+---
+
+
+
+
+
+
+
+## Search examples
+
+### 1. Batch search example: Multiple individuals
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs groupId="batch">
+
+  <TabItem value="json" label="json">
+
+```js
+{
+  "fuzziness": "1",
+  "source_type": ["sanctions", "pep"],
+  "exclude_deceased":true,
+  "check_items": [
+    {
+      "customer_id": "u1i1",
+      "search_term": "Joe Doe",
+      "filters": {
+        "group_type": ["individual"],
+        "nationality": ["RU"],
+        "gender": ["male"]
+      }
+    },
+    {
+      "customer_id": "px2",
+      "search_term": "Maria Vladimirovna Vorontsova",
+      "filters": {
+        "group_type": ["individual"],
+        "nationality": ["RU"],
+        "gender": ["male"]
+      }
+    }
+  ]
+}
+```
+
+  </TabItem>
+
+  <TabItem value="py" label="python">
+
+```py
+import requests
+
+api_key_value = 'your-API-Key'
+base_url = 'base_url'
+
+body = {
+    "fuzziness": "1",
+    "source_type": ["sanctions", "pep"],
+    "exclude_deceased":true,
+    "include_only_sanction_source_id": ["CCAS"],
+
+    "check_items": [
+        {
+            "customer_id": "u1i1",
+            "search_term": "Joe Doe",
+            "filters": {
+                "group_type": ["individual"],
+                "nationality": ["RU"],
+                "gender": ["male"]
+            }
+        },
+        {
+            "customer_id": "px2",
+            "search_term": "Maria Vladimirovna Vorontsova",
+            "filters": {
+                "group_type": ["individual"],
+                "nationality": ["RU"],
+                "gender": ["male"]
+            }
+        }
+    ]
+}
+
+url = f"{base_url}/check/sanctions_pep/batch"
+headers = {
+    "x-api-key": api_key_value,
+    "Content-Type": "application/json"
+}
+
+response = requests.post(url, headers=headers, json=body)
+if response.status_code == 200:
+    print("Request successful:", response.json())
+else:
+    print("Failed to make request, status code:", response.status_code)
+```
+
+  </TabItem>
+
+  <TabItem value="js" label="javascript">
+
+```js
+const fetch = require('node-fetch');
+const apiKeyValue = 'your-API-Key';
+const baseUrl = 'base_url';
+
+const body = {
+  fuzziness: "1",
+  source_type: ["sanctions", "pep"],
+  include_only_sanction_source_id: ["CCAS"],
+
+  check_items: [
+    {
+      customer_id: "u1i1",
+      search_term: "Joe Doe",
+      filters: {
+        group_type: ["individual"],
+        nationality: ["RU"],
+        gender: ["male"]
+      }
+    },
+    {
+      customer_id: "px2",
+      search_term: "Maria Vladimirovna Vorontsova",
+      filters: {
+        group_type: ["individual"],
+        nationality: ["RU"],
+        gender: ["female"]
+      }
+    }
+  ]
+};
+
+const url = `${baseUrl}/check/sanctions_pep/batch`;
+const headers = {
+  "x-api-key": apiKeyValue,
+  "Content-Type": "application/json"
+};
+
+fetch(url, {
+  method: 'POST',
+  headers: headers,
+  body: JSON.stringify(body)
+})
+  .then(response => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error('Failed to fetch: ' + response.status);
+    }
+  })
+  .then(data => {
+    console.log("Request successful:", data);
+  })
+  .catch(error => {
+    console.log("Error in making request:", error.message);
+  });
+```
+
+  </TabItem>
+</Tabs>
+
+<details>
+  <summary>Response statusCode: 200</summary>
+  <div>
+
+```js
+{
+  "u1i1": {
+    "results": [],
+    "match_profiles": []
+  },
+  "px2": {
+    "results": [
+   
+      {
+        "id": "c74f58735b",
+        "target": {
+          "name": "Maria Vladimirovna Vorontsova",
+          "first_name": "Maria Vladimirovna",
+          "second_name": "VORONTSOVA",
+          "nationality": ["RU"],
+          "other_names": ["Мария Воронцова", "Мария Владимировна Путина"],
+          "last_seen": "2025-10-10",
+          "group_type": "individual"
+        },
+        "source": {
+          "listing_id": "741",
+          "region": "Canada",
+          "name": "Consolidated Canadian Autonomous Sanctions List",
+          "id": "CCAS",
+          "source_type": "sanctions"
+        },
+        "score": "3.03",
+        "case": []
+      }
+    ],
+    "match_profiles": [
+      {
+        "match_score": "81",
+        "match_profile_id": "0",
+        "name": "Maria Vladimirovna Vorontsova",
+        "results_ids": ["12527c9a8f"]
+      }
+    ]
+  }
+}
+```
+
+  </div>
+</details>
