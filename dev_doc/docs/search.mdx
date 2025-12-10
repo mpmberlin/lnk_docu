@@ -127,7 +127,19 @@ Example: `"81"`
 
 - **`name`**  
 Type: String. Canonical or representative name for the cluster.  
-Example: `"Mohammed Al Ghabra"`
+Example: `"Barack Obama"`
+
+- **`rca_name`**  
+Type: String. If rca_hit is true, then this is the name of the person which is related or close associated to the `name`.  
+Example: `"Michelle Obama"`
+
+- **`rca_hit`**  
+Type: Boolean. The match was triggered by a related close associated to the `name`.  
+
+
+- **`id_hit`**  
+Type: Boolean. The match was triggered by an ID/passport/etc related to the target.  
+
 
 - **`results_ids`**  
 Type: Array of strings. IDs of the results that belong to this cluster.  
